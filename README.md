@@ -1,45 +1,45 @@
-# 🐟 原神自动钓鱼机
+作者的其他护肝工具： [🐟 自动钓鱼机](https://github.com/babalae/genshin-fishing-toy) | [🛠️账号切换](https://github.com/babalae/mihoyo-starter)
 
-PC原神自动钓鱼机（支持不同游戏窗口大小、DPI缩放）。『你只需负责甩竿，后面的放着我来！』
+# 🎲 七圣召唤PVE全自动打牌
 
-操作最简单的自动钓鱼机，自带GUI，选区后一键开启，持续钓鱼，无需反复开关，简单易用，解放双手。
+PC原神七圣召唤PVE全自动打牌（支持不同游戏窗口大小、DPI缩放）。
 
-* **无需调整原神窗口大小、DPI缩放等显示设置就能使用（全屏也可以使用）**
-* 鱼儿上钩后延迟 0 ~ 1s 自动提竿
-* 钓鱼条识别率极高，个人测试无脱钩情况，鱼挣扎（黄条）情况也能正常识别
-* **容错率高，你可以一直开着自动钓鱼进行传送、跑路、钓鱼**
-* 兼容新活动钓鱼（只是钓鱼条被倒计时计时挤下去了，调整下选区即可）
+『PVE什么的最讨厌了！双风莫娜打遍提瓦特！』
 
-![](https://raw.githubusercontent.com/babalae/genshin-fishing-toy/master/Image/demo.gif)
+支持角色邀请、每周来客挑战、大世界NPC挑战。
+
 
 ## 下载地址
 
-[📥Github下载（1.3）](https://github.com/babalae/genshin-fishing-toy/releases/download/v1.3/GenshinAutoFish_v1.3.zip)
-
-[📥Gitee下载（1.3）](https://gitee.com/babalae/genshin-auto-fish/attach_files/839858/download/GenshinAutoFish_v1.3.zip)
-
-**如果你遇到了[内存溢出](https://github.com/babalae/genshin-fishing-toy/issues/18)的问题，或者你是64位的系统，可以直接下载[📥x64版本](https://wwn.lanzouy.com/ibNbY05bx50f)**
+[📥Github下载（1.0）]()
 
 ## 使用方法
 
 你的系统需要满足以下条件：
   * Windows 7 或更高版本
-  * [.NET Framework 4.6.1](https://support.microsoft.com/zh-cn/topic/windows-net-framework-4-6-1-%E8%84%B1%E6%9C%BA%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-842e545a-bad5-c538-e491-578d017e677c) 或更高版本。**低于此版本在打开程序时可能无反应，或者直接报错**。
+  * 系统是64位（都已经2023年了，总没有还在用32位系统的人了吧）
+  * [.NET Framework 4.7.2](https://support.microsoft.com/zh-cn/topic/%E9%80%82%E7%94%A8%E4%BA%8E-windows-%E7%9A%84-microsoft-net-framework-4-7-2-%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-05a72734-2127-a15d-50cf-daf56d5faec2) 或更高版本。**低于此版本在打开程序时可能无反应，或者直接报错**。
 
 
-首先移动半透明矩形选区选择识别范围，只需要框住钓鱼进度条就可以了，**不要框住下方的钓鱼总进度圈**。
+1、首先你的牌组必须是 **莫娜、砂糖、琴**，顺序不能变，带什么牌无所谓。 [牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)
 
-确认选框位置正确后，就直接启动进行自动钓鱼啦（快捷键<kbd>F11</kbd>）。
+<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/7723febd-9cef-4dba-aeed-f7c4b1bee992"/>
 
-甩竿后直接等待鱼儿上钩即可，保持当前原神窗口是激活状态，程序会自动根据当前图像识别的结果发送对应鼠标操作，自动化提竿、完成钓鱼进度。
 
-不在意一些战斗误触的时候可以一直开着自动钓鱼识别，当然如果不钓鱼了最好还是停止自动钓鱼功能，部分角色重击动画可能会被识别成钓鱼条，影响实际操作。
+2、**窗口化游戏，且窗口大小不低于1600x900，游戏整个界面不能被其他窗口遮挡！**。
+
+3、在游戏内进入七圣召唤对局，到**初始手牌**界面，如下图：
+
+<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/900fb60c-408f-4aa6-9ee0-8955b5a1bf4e"/>
+
+4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键<kbd>F11</kbd>）。
+
 
 ## FAQ
 * 为什么需要管理员权限？
   * 因为游戏以管理员权限启动，软件不以管理员权限启动的话没法模拟鼠标点击。
-* 会不会封号？
-  * 只能说理论上不会被封，但是mhy是自由的，封号理由上有第三方软件这一条。当前使用了 PostMessage 模拟鼠标点击，还是存在被检测的可能。只能说请低调使用，请不要跳脸官方。
+* 会不会封号？（怕别用，用别怕）
+  * 只能说理论上不会被封，但是mhy是自由的，用户条款上明确说明模拟操作是封号理由之一。当前使用了 mouse_event 模拟鼠标点击，还是存在被检测的可能。只能说请低调使用，请不要跳脸官方。
 
 ## 投喂
 
