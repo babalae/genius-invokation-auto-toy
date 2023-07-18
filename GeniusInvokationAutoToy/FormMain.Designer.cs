@@ -50,7 +50,7 @@ namespace GeniusInvokationAutoToy
             this.rtbConsole.Location = new System.Drawing.Point(9, 76);
             this.rtbConsole.Margin = new System.Windows.Forms.Padding(2);
             this.rtbConsole.Name = "rtbConsole";
-            this.rtbConsole.Size = new System.Drawing.Size(462, 406);
+            this.rtbConsole.Size = new System.Drawing.Size(387, 406);
             this.rtbConsole.TabIndex = 7;
             this.rtbConsole.Text = "";
             this.rtbConsole.TextChanged += new System.EventHandler(this.rtbConsole_TextChanged);
@@ -58,7 +58,7 @@ namespace GeniusInvokationAutoToy
             // chkTopMost
             // 
             this.chkTopMost.AutoSize = true;
-            this.chkTopMost.Location = new System.Drawing.Point(149, 15);
+            this.chkTopMost.Location = new System.Drawing.Point(142, 14);
             this.chkTopMost.Margin = new System.Windows.Forms.Padding(2);
             this.chkTopMost.Name = "chkTopMost";
             this.chkTopMost.Size = new System.Drawing.Size(72, 16);
@@ -72,7 +72,7 @@ namespace GeniusInvokationAutoToy
             this.btnSwitch.Location = new System.Drawing.Point(9, 35);
             this.btnSwitch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSwitch.Name = "btnSwitch";
-            this.btnSwitch.Size = new System.Drawing.Size(349, 30);
+            this.btnSwitch.Size = new System.Drawing.Size(323, 30);
             this.btnSwitch.TabIndex = 10;
             this.btnSwitch.Text = "开始自动打牌(F11)";
             this.btnSwitch.UseVisualStyleBackColor = true;
@@ -81,7 +81,7 @@ namespace GeniusInvokationAutoToy
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(245, 12);
+            this.linkLabel1.Location = new System.Drawing.Point(219, 15);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(113, 12);
             this.linkLabel1.TabIndex = 11;
@@ -114,7 +114,7 @@ namespace GeniusInvokationAutoToy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(482, 494);
+            this.ClientSize = new System.Drawing.Size(407, 494);
             this.Controls.Add(this.lblYSStatus);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.linkLabel1);

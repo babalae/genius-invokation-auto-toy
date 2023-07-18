@@ -265,6 +265,9 @@ namespace GeniusInvokationAutoToy.Strategy
             // 0 投骰子
             ReRollDice(ElementalType.Anemo, ElementalType.Hydro, ElementalType.Omni);
 
+            // 等待到我的回合 // 投骰子动画时间是不确定的
+            WaitForMyTurn(1000);
+
             // 1 回合1 行动1 莫娜使用1次二技能
             MyLogger.Info("回合1 行动1 莫娜使用1次二技能");
             bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, 8);

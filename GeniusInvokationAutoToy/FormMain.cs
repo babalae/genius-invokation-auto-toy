@@ -57,7 +57,7 @@ namespace GeniusInvokationAutoToy
 
             rtbConsole.Text = @"软件在Github上开源且免费 by huiyadanli
 
-支持角色邀请、每周来客挑战、大世界NPC挑战。
+支持角色邀请、每周来客挑战、大世界NPC挑战（部分场景不支持、或者打不过/拿不满奖励）。
 
 1、牌组必须是莫娜、砂糖、琴，顺序不能变，带什么牌无所谓
 2、窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！
