@@ -125,12 +125,14 @@
     <Compile Include="Strategy\BaseStrategy.cs" />
     <Compile Include="Strategy\MonaSucroseJeanStrategy.cs" />
     <Compile Include="Utils\Device.cs" />
+    <Compile Include="Utils\Extension\RetryExtension.cs" />
     <Compile Include="Utils\GAHelper.cs" />
     <Compile Include="Utils\MyLogger.cs" />
     <Compile Include="Utils\MouseUtils.cs" />
     <Compile Include="Utils\Native.cs" />
     <Compile Include="Utils\PrimaryScreen.cs" />
     <Compile Include="Utils\Extension\RectangleExtension.cs" />
+    <Compile Include="Utils\Retry.cs" />
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>

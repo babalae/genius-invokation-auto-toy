@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GeniusInvokationAutoToy.Core.MyException;
 using NLog.LayoutRenderers;
 using Point = System.Drawing.Point;
 
@@ -250,7 +251,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         /// <param name="characterIndex">从左到右第几个角色，从1开始计数</param>
         /// <returns></returns>
-        public bool ChooseCharacterFirst(int characterIndex)
+        public void ChooseCharacterFirst(int characterIndex)
         {
             // 首次执行获取角色区域
             if (MyCharacterRects == null || MyCharacterRects.Count == 0)
@@ -258,14 +259,13 @@ namespace GeniusInvokationAutoToy.Strategy
                 MyCharacterRects = GetCharacterRects();
                 if (MyCharacterRects == null || MyCharacterRects.Count != 3)
                 {
-                    return false;
+                    throw new RetryException("未获取到角色区域");
                 }
             }
 
 
             // 双击选择角色出战
             MouseUtils.DoubleClick(MakeOffset(MyCharacterRects[characterIndex - 1].GetCenterPoint()));
-            return true;
         }
 
         ///// <summary>
@@ -615,6 +615,8 @@ namespace GeniusInvokationAutoToy.Strategy
             MouseUtils.Click(MakeOffset(p));
             Sleep(1000); // 有弹出动画 
             MouseUtils.Click(MakeOffset(p));
+            Sleep(300);
+            ClickGameWindowCenter(); // 复位
         }
 
         /// <summary>

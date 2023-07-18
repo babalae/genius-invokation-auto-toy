@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -106,13 +107,9 @@ namespace GeniusInvokationAutoToy.Strategy
             // 此处选择第一个角色 莫娜
             MyLogger.Info("等待5s动画...");
             Sleep(5000);
-            bool chooseCharacterRes = ChooseCharacterFirst(1);
-            if (!chooseCharacterRes)
-            {
-                // 选择失败
-                MyLogger.Info("未获取到角色区域,停止继续执行！");
-                throw new Exception("未获取到角色区域,停止继续执行！");
-            }
+
+            // 识别角色所在区域
+            Retry.Do(() => ChooseCharacterFirst(1), TimeSpan.FromSeconds(1), 5);
 
             MyLogger.Info("出战莫娜");
 
