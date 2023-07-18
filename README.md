@@ -14,7 +14,10 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 下载地址
 
-[📥Github下载（1.0）]()
+[📥Github下载（1.0）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.0/GeniusInvokationAutoToy.v1.0.zip)
+
+[📥蓝奏云](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
+
 
 ## 使用方法
 
