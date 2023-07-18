@@ -1,4 +1,4 @@
-作者的其他护肝工具： [🐟 自动钓鱼机](https://github.com/babalae/genshin-fishing-toy) | [🛠️账号切换](https://github.com/babalae/mihoyo-starter)
+更多： [🐟 自动钓鱼机](https://github.com/babalae/genshin-fishing-toy) | [🛠️账号切换](https://github.com/babalae/mihoyo-starter)
 
 # 🎲 七圣召唤PVE全自动打牌
 
