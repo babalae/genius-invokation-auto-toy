@@ -29,14 +29,14 @@ PC原神七圣召唤PVE全自动打牌。
 
 1、首先你的牌组必须是 **莫娜、砂糖、琴**，顺序不能变，带什么牌无所谓。 [牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)
 
-<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/7723febd-9cef-4dba-aeed-f7c4b1bee992"/>
+<img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p1.png"/>
 
 
 2、**窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！**
 
 3、在游戏内进入七圣召唤对局，到**初始手牌**界面，如下图：
 
-<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/900fb60c-408f-4aa6-9ee0-8955b5a1bf4e"/>
+<img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p2.png"/>
 
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键<kbd>F11</kbd>）。
 
