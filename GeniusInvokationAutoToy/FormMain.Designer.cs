@@ -69,10 +69,10 @@ namespace GeniusInvokationAutoToy
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Location = new System.Drawing.Point(13, 38);
+            this.btnSwitch.Location = new System.Drawing.Point(9, 35);
             this.btnSwitch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSwitch.Name = "btnSwitch";
-            this.btnSwitch.Size = new System.Drawing.Size(295, 24);
+            this.btnSwitch.Size = new System.Drawing.Size(349, 30);
             this.btnSwitch.TabIndex = 10;
             this.btnSwitch.Text = "开始自动打牌(F11)";
             this.btnSwitch.UseVisualStyleBackColor = true;
