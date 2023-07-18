@@ -45,6 +45,28 @@ namespace GeniusInvokationAutoToy.Strategy
             int y = (int)Math.Ceiling(rc.Location.Y * PrimaryScreen.ScaleY);
             int w = (int)Math.Ceiling(rc.Width * PrimaryScreen.ScaleX);
             int h = (int)Math.Ceiling(rc.Height * PrimaryScreen.ScaleY);
+            MyLogger.Debug($"原神窗口大小：{rc.Width} x {rc.Height}");
+            MyLogger.Debug($"原神窗口大小(计算DPI缩放后)：{rc.Width * PrimaryScreen.ScaleX} x {rc.Height * PrimaryScreen.ScaleY}");
+
+            System.Drawing.Size size = new System.Drawing.Size(1920, 1080);
+            if (w >= 1920 && w < 2000 && h >= 1080 && h < 1150)
+            {
+                size = new System.Drawing.Size(1920, 1080);
+                ImageRecognition.WidthScale = 1;
+                //ImageRecognition.HeightScale = 1;
+            }
+            else if (w >= 1600 && w < 2000 && h >= 900 && h < 950)
+            {
+                size = new System.Drawing.Size(1600, 900);
+                ImageRecognition.WidthScale = 1600 * 1.0 / 1920;
+                //ImageRecognition.HeightScale = 900 * 1.0 / 1080;
+            }
+            else
+            {
+                ImageRecognition.WidthScale = w * 1.0 / 1929;  // 1929是计算了边缘
+                //ImageRecognition.HeightScale = h * 1.0 / 1109; // 1109是计算了窗口标题栏
+            }
+            MyLogger.Debug($"匹配图片缩放比率：{ImageRecognition.WidthScale}");
             return new Rectangle(x, y, w, h);
         }
 
@@ -412,6 +434,10 @@ namespace GeniusInvokationAutoToy.Strategy
         {
             Point p = ImageRecognition.FindSingleTarget(Capture().ToMat(),
                 ImageResCollections.ConfirmButton.ToMat());
+            if (p.IsEmpty)
+            {
+                return false;
+            }
             return MouseUtils.Click(MakeOffset(p));
         }
 
@@ -534,7 +560,6 @@ namespace GeniusInvokationAutoToy.Strategy
                     if (retryCount > 20)
                     {
                         throw new Exception("骰子数量与预期不符，重试次数过多，可能出现了未知错误！");
-                        break;
                     }
 
                     MyLogger.Info("当前骰子数量{}与期望的骰子数量{}不相等，重试", diceStatus.Sum(x => x.Value), expectDiceCount);

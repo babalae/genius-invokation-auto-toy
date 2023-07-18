@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static GeniusInvokationAutoToy.Utils.Native;
+using static System.Windows.Forms.AxHost;
 using Point = System.Drawing.Point;
 
 namespace GeniusInvokationAutoToy.Core
@@ -21,6 +22,34 @@ namespace GeniusInvokationAutoToy.Core
     class ImageRecognition
     {
         public static bool IsDebug = false;
+        public static double WidthScale = 1;
+        public static double HeightScale = 1;
+
+        /// <summary>
+        /// 所有图片是等比放大的
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        public static Mat Resize(Mat src, double scale)
+        {
+            if (scale != 1)
+            {
+                return Resize(src, scale, scale);
+            }
+            return src;
+        }
+
+        public static Mat Resize(Mat src, double widthScale, double heightScale)
+        {
+            if (widthScale != 1 || heightScale != 1)
+            {
+                Mat dst = new Mat();
+                Cv2.Resize(src, dst, new OpenCvSharp.Size(src.Width * widthScale, src.Height * heightScale));
+                return dst;
+            }
+            return src;
+        }
 
         public static Point FindSingleTarget(Bitmap imgSrc, Bitmap imgSub, double threshold = 0.8)
         {
@@ -34,6 +63,7 @@ namespace GeniusInvokationAutoToy.Core
             }
             catch (Exception ex)
             {
+                MyLogger.Error(ex.ToString());
                 return new Point();
             }
             finally
@@ -46,10 +76,12 @@ namespace GeniusInvokationAutoToy.Core
         public static Point FindSingleTarget(Mat srcMat, Mat dstMat, double threshold = 0.8)
         {
             Point p = new Point();
-            
+
             OutputArray outArray = null;
             try
             {
+                dstMat = Resize(dstMat, WidthScale);
+
                 outArray = OutputArray.Create(srcMat);
                 Cv2.MatchTemplate(srcMat, dstMat, outArray, TemplateMatchModes.CCoeffNormed);
                 double minValue, maxValue;
@@ -63,14 +95,14 @@ namespace GeniusInvokationAutoToy.Core
                     if (IsDebug)
                     {
                         var imgTar = srcMat.Clone();
-                        Cv2.Rectangle(imgTar, point, new OpenCvSharp.Point(point.X + dstMat.Width, point.Y + dstMat.Height),
+                        Cv2.Rectangle(imgTar, point,
+                            new OpenCvSharp.Point(point.X + dstMat.Width, point.Y + dstMat.Height),
                             Scalar.Red, 2);
                         Cv2.PutText(imgTar, maxValue.ToString("0.00"), new OpenCvSharp.Point(point.X, point.Y - 10),
                             HersheyFonts.HersheySimplex, 0.5, Scalar.Red);
 
                         Cv2.ImShow("识别窗口", imgTar);
                     }
-
                 }
 
                 return p;
@@ -109,13 +141,14 @@ namespace GeniusInvokationAutoToy.Core
         //}
 
         public static List<Point> FindMultiTarget(Mat srcMat, Mat dstMat, string title, out Mat resMat,
-            double threshold = 0.8,
-            int findTargetCount = 8)
+            double threshold = 0.8, int findTargetCount = 8)
         {
             List<Point> pointList = new List<Point>();
             resMat = srcMat.Clone();
             try
             {
+                dstMat = Resize(dstMat, WidthScale);
+
                 Mat matchResult = new Mat();
                 Cv2.MatchTemplate(srcMat, dstMat, matchResult, TemplateMatchModes.CCoeffNormed);
 
@@ -148,7 +181,6 @@ namespace GeniusInvokationAutoToy.Core
                                 new OpenCvSharp.Point(point.X, point.Y - 10),
                                 HersheyFonts.HersheySimplex, 0.5, Scalar.Red);
                         }
-
                     }
                     else
                     {
@@ -270,6 +302,5 @@ namespace GeniusInvokationAutoToy.Core
 
             return projection;
         }
-
     }
 }

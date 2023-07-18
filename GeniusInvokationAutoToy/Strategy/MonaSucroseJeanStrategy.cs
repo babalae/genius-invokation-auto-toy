@@ -440,7 +440,7 @@ namespace GeniusInvokationAutoToy.Strategy
             if (roundDiceCount >= 3)
             {
                 MyLogger.Info("行动2 使用1次一技能");
-                useSkillRes = ActionPhaseAutoUseSkill(1, 1, ElementalType.Hydro, roundDiceCount);
+                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Hydro, roundDiceCount);
                 if (!useSkillRes)
                 {
                     MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
@@ -467,7 +467,7 @@ namespace GeniusInvokationAutoToy.Strategy
         {
             bool useSkillRes;
             MyLogger.Info("使用1次三技能");
-            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, roundDiceCount);
+            useSkillRes = ActionPhaseAutoUseSkill(1, 3, ElementalType.Hydro, roundDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");

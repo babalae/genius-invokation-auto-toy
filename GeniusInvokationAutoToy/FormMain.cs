@@ -1,26 +1,13 @@
 ﻿using GeniusInvokationAutoToy.Core;
-using GeniusInvokationAutoToy.Core.Model;
 using GeniusInvokationAutoToy.Forms.Hotkey;
 using GeniusInvokationAutoToy.Strategy;
 using GeniusInvokationAutoToy.Utils;
-using OpenCvSharp;
-using OpenCvSharp.Extensions;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GeniusInvokationAutoToy.Utils.Extension;
-using MathNet.Numerics.Statistics;
-using System.Text.RegularExpressions;
 using System.Threading;
-using NLog.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Forms;
 
 
 namespace GeniusInvokationAutoToy
@@ -68,6 +55,15 @@ namespace GeniusInvokationAutoToy
             this.Text += currentVersion;
             //GAHelper.Instance.RequestPageView($"/main/{thisVersion}", $"进入{thisVersion}版本主界面");
 
+            rtbConsole.Text = @"软件在Github上开源且免费 by huiyadanli
+
+支持角色邀请、每周来客挑战、大世界NPC挑战。
+
+1、牌组必须是莫娜、砂糖、琴，顺序不能变，带什么牌无所谓
+2、窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！
+3、在游戏内进入七圣召唤对局，到初始手牌界面
+4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键F11）。
+";
 
             YSStatus();
 
@@ -86,6 +82,9 @@ namespace GeniusInvokationAutoToy
             //target.TargetRichTextBox = rtbConsole;
             //target.UseDefaultRowColoringRules = true;
             //NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(target, NLog.LogLevel.Trace);
+
+
+
         }
 
         private bool YSStatus()
@@ -113,15 +112,17 @@ namespace GeniusInvokationAutoToy
 
         private async void StartGame()
         {
-            logger.Info("https://github.com/babalae/genius-invokation-auto-toy");
             if (!window.FindYSHandle())
             {
                 MyLogger.Warn("未找到原神进程，请先启动原神！");
             }
 
-            rtbConsole.Text = "";
-            strategy = new MonaSucroseJeanStrategy(window);
             window.Focus();
+
+            rtbConsole.Text = ""; // 清空日志
+
+            strategy = new MonaSucroseJeanStrategy(window);
+
 
             cts = new CancellationTokenSource(); ;
             await strategy.RunAsync(cts);
