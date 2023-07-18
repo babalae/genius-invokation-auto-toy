@@ -46,7 +46,7 @@ namespace GeniusInvokationAutoToy.Core
         public static Bitmap ConfirmButton = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\确定.png"));
         public static Bitmap RoundEndButton = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\回合结束.png"));
         public static Bitmap ElementalTuningConfirmButton = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\元素调和.png"));
-        public static Bitmap ExitDuelButton = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\元素调和.png"));
+        public static Bitmap ExitDuelButton = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\退出挑战.png"));
 
         public static Bitmap InMyActionBitmap = RoundEndButton;
         public static Bitmap InOpponentActionBitmap = new Bitmap(Path.Combine(Application.StartupPath, "pic\\other\\对方行动中.png"));

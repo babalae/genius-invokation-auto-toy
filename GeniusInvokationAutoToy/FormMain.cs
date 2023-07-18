@@ -18,6 +18,9 @@ using System.Windows.Forms;
 using GeniusInvokationAutoToy.Utils.Extension;
 using MathNet.Numerics.Statistics;
 using System.Text.RegularExpressions;
+using System.Threading;
+using NLog.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 
 namespace GeniusInvokationAutoToy
@@ -26,25 +29,34 @@ namespace GeniusInvokationAutoToy
     {
         private static NLog.Logger logger;
 
-        private FormMask maskForm;
-
         private YuanShenWindow window = new YuanShenWindow();
 
-
-        private MonaSucroseJeanStrategy strategy;
+        private BaseStrategy strategy;
 
         private bool isAutoPlaying = false;
 
         private string thisVersion;
+
+        CancellationTokenSource cts;
 
         public FormMain()
         {
             InitializeComponent();
         }
 
+        public void RtbConsoleDeleteLine()
+        {
+            Invoke(new Action(() =>
+            {
+                rtbConsole.Lines = rtbConsole.Lines.Take(rtbConsole.Lines.Length - 2).ToArray();
+                rtbConsole.Text += Environment.NewLine;
+            }));
+        }
+
         private void FormMain_Load(object sender, EventArgs e)
         {
             logger = NLog.LogManager.GetCurrentClassLogger();
+            MyLogger.formMain = this;
             // 标题加上版本号
             string currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             if (currentVersion.Length > 3)
@@ -59,8 +71,6 @@ namespace GeniusInvokationAutoToy
 
             YSStatus();
 
-            strategy = new MonaSucroseJeanStrategy(window);
-
             try
             {
                 RegisterHotKey("F11");
@@ -70,6 +80,12 @@ namespace GeniusInvokationAutoToy
                 MyLogger.Warn(ex.Message);
                 MessageBox.Show(ex.Message, "热键注册失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            //RichTextBoxTarget target = new RichTextBoxTarget();
+            //target.Layout = "${longdate} [${threadname:whenEmpty=${threadid}}] ${uppercase:${level}} ${message:withException=true} ${all-event-properties}";
+            //target.TargetRichTextBox = rtbConsole;
+            //target.UseDefaultRowColoringRules = true;
+            //NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(target, NLog.LogLevel.Trace);
         }
 
         private bool YSStatus()
@@ -88,34 +104,6 @@ namespace GeniusInvokationAutoToy
             }
         }
 
-        private void InitMaskWindows(int x, int y, int w, int h)
-        {
-            // 钓鱼条捕获窗口
-            maskForm = new FormMask(x, y, w, h);
-            //maskForm.FormMainInstance = this;
-            maskForm.Show();
-        }
-
-        private void TestScreen()
-        {
-            //PrintMsg($"获取真实设置的桌面分辨率大小 {PrimaryScreen.DESKTOP.Width} x {PrimaryScreen.DESKTOP.Height}");
-            //PrintMsg($"获取屏幕分辨率当前物理大小 {PrimaryScreen.WorkingArea.Width} x {PrimaryScreen.WorkingArea.Height}");
-
-            //PrintMsg($"获取缩放百分比 {PrimaryScreen.ScaleX} x {PrimaryScreen.ScaleY}");
-            //PrintMsg($"当前系统DPI {PrimaryScreen.DpiX} x {PrimaryScreen.DpiY}");
-
-            //if (!window.GetHWND())
-            //{
-            //    PrintMsg("未找到原神进程，请先启动原神！");
-            //}
-
-            //Rectangle rc = window.GetSize();
-            //PrintMsg($"原神窗口 {rc.Width} x {rc.Height}");
-            //PrintMsg($"原神窗口 {rc.Width * PrimaryScreen.ScaleX} x {rc.Height * PrimaryScreen.ScaleY}");
-            //strainBarArea.Location = new System.Drawing.Point((int)((rc.X + 300) * PrimaryScreen.ScaleX), (int)(rc.Y * PrimaryScreen.ScaleY + 16));
-        }
-
-
         private void timerCapture_Tick(object sender, EventArgs e)
         {
             //Bitmap pic = capture.Capture();
@@ -123,49 +111,26 @@ namespace GeniusInvokationAutoToy
             strategy.GetCharacterRects();
         }
 
-        //private void PrintMsg(string msg)
-        //{
-        //    msg = DateTime.Now + " " + msg;
-        //    Console.WriteLine(msg);
-        //    rtbConsole.Text += msg + Environment.NewLine;
-        //    this.rtbConsole.SelectionStart = rtbConsole.TextLength;
-        //    this.rtbConsole.ScrollToCaret();
-        //}
-
         private async void StartGame()
         {
+            logger.Info("https://github.com/babalae/genius-invokation-auto-toy");
             if (!window.FindYSHandle())
             {
                 MyLogger.Warn("未找到原神进程，请先启动原神！");
             }
 
-
+            rtbConsole.Text = "";
+            strategy = new MonaSucroseJeanStrategy(window);
             window.Focus();
 
-            // strategy.Run();
-            await strategy.RunAsync();
+            cts = new CancellationTokenSource(); ;
+            await strategy.RunAsync(cts);
 
-
-            //Rectangle rc = window.GetSize();
-            //PrintMsg($"原神窗口 {rc.Width} x {rc.Height}");
-            //PrintMsg(
-            //    $"原神窗口 位置 {rc.Location.X * PrimaryScreen.ScaleX},{rc.Location.Y * PrimaryScreen.ScaleY} 大小 {rc.Width * PrimaryScreen.ScaleX} x {rc.Height * PrimaryScreen.ScaleY}");
-
-            //int x = (int)Math.Ceiling(rc.Location.X * PrimaryScreen.ScaleX);
-            //int y = (int)Math.Ceiling(rc.Location.Y * PrimaryScreen.ScaleY);
-            //int w = (int)Math.Ceiling(rc.Width * PrimaryScreen.ScaleX);
-            //int h = (int)Math.Ceiling(rc.Height * PrimaryScreen.ScaleY);
-
-            ////InitMaskWindows(x, y, w, h);
-
-            ////capture.Start(x, y, w, h);
-
-            //timerCapture.Interval = 3000;
-            //timerCapture.Start();
         }
 
         private void StopGame()
         {
+            cts?.Cancel();
         }
 
         private void btnSwitch_Click(object sender, EventArgs e)
@@ -209,41 +174,7 @@ namespace GeniusInvokationAutoToy
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/babalae/genshin-fishing-toy");
-        }
-
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //strategy.RollPhaseReRoll(ElementalType.Hydro);
-
-            //ImageRecognition.FindSingleTarget(new Bitmap("E:\\HuiTask\\原神七圣召唤\\素材\\Clip_20230715_182700.png").ToMat(), ImageResCollections.ConfirmBitmap.ToMat());
-
-            //List<Rect> rects = new List<Rect>();
-
-            strategy.WaitOpponentAction();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            strategy.ActionPhaseElementalTuning();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            ImageRecognition.IsDebug = true;
-            //Mat srcMat = new Bitmap("E:\\HuiTask\\原神七圣召唤\\素材\\Clip_20230715_182733.png").ToMat();
-            //// 切割图片后再识别 加快速度 位置没啥用，所以切割后比较方便
-            //int cutLength = srcMat.Width / 5 * 4;
-            //srcMat = new Mat(srcMat, new Rect(cutLength, 0, srcMat.Width - cutLength, srcMat.Height));
-            //Dictionary<string, List<System.Drawing.Point>> dictionary = ImageRecognition.FindPicFromImage(srcMat, ImageResCollections.ActionPhaseDiceBitmaps, 0.7);
-
-
-            Dictionary<string, int> res = strategy.ActionPhaseDice();
-            foreach (var item in res)
-            {
-                logger.Info($"{item.Key} {item.Value}");
-            }
+            Process.Start("https://github.com/babalae/genius-invokation-auto-toy");
         }
 
         #region Hotkey

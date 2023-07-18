@@ -16,13 +16,16 @@ using Point = System.Drawing.Point;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
-    public class BaseStrategy
+    public abstract class BaseStrategy
     {
         protected ImageCapture capture = new ImageCapture();
         protected YuanShenWindow window;
         protected Rectangle windowRect;
 
-        protected int CurrentCardCount = 0;
+        protected int CurrentCardCount;
+        protected int CurrentTakenOutCharacterCount;
+
+        protected CancellationTokenSource cts;
 
 
         public List<Rectangle> MyCharacterRects { get; set; }
@@ -45,13 +48,49 @@ namespace GeniusInvokationAutoToy.Strategy
             return new Rectangle(x, y, w, h);
         }
 
+        protected void Init()
+        {
+            CurrentCardCount = 0;
+            CurrentTakenOutCharacterCount = 0;
+        }
+
+        protected void Sleep(int millisecondsTimeout)
+        {
+            CheckTaskCancel();
+            Thread.Sleep(millisecondsTimeout);
+        }
+
+        protected Bitmap Capture()
+        {
+            CheckTaskCancel();
+            return capture.Capture();
+        }
+
+        protected void CheckTaskCancel()
+        {
+            if (cts != null && cts.IsCancellationRequested)
+            {
+                throw new TaskCanceledException("任务取消");
+            }
+        }
+
+        public abstract void Run(CancellationTokenSource cts1);
+
+        public async Task RunAsync(CancellationTokenSource cts1)
+        {
+            await Task.Run(() =>
+            {
+                Run(cts1);
+            });
+        }
+
         /// <summary>
         /// 获取我方三个角色卡牌区域
         /// </summary>
         /// <returns></returns>
         public List<Rectangle> GetCharacterRects()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
 
             var lowPurple = new Scalar(235, 245, 198);
             var highPurple = new Scalar(255, 255, 236);
@@ -243,7 +282,7 @@ namespace GeniusInvokationAutoToy.Strategy
             // 选择角色
             MouseUtils.Click(p);
             // // 双击切人
-            // Thread.Sleep(1500);
+            // Sleep(1500);
             // MouseUtils.Click(p);
 
             // 点击切人按钮
@@ -266,10 +305,10 @@ namespace GeniusInvokationAutoToy.Strategy
             Point p = MakeOffset(MyCharacterRects[characterIndex - 1].GetCenterPoint());
             // 选择角色
             MouseUtils.Click(p);
-            // // 双击切人
-            Thread.Sleep(500);
+            // 双击切人
+            Sleep(500);
             MouseUtils.Click(p);
-
+            Sleep(300);
             return true;
         }
 
@@ -288,7 +327,7 @@ namespace GeniusInvokationAutoToy.Strategy
         ///// <param name="holdElementalTypes">保留的元素类型</param>
         //public void RollPhaseReRoll2(params ElementalType[] holdElementalTypes)
         //{
-        //    Bitmap gameSnapshot = capture.Capture();
+        //    Bitmap gameSnapshot = Capture();
 
         //    Mat srcMat = gameSnapshot.ToMat();
         //    Mat resMat = null;
@@ -310,11 +349,11 @@ namespace GeniusInvokationAutoToy.Strategy
         //        foreach (var point in points)
         //        {
         //            MouseUtils.Click(point.X + windowRect.X, point.Y + windowRect.Y);
-        //            Thread.Sleep(100);
+        //            Sleep(100);
         //        }
         //    }
 
-        //    Thread.Sleep(1000);
+        //    Sleep(1000);
         //    //Cv2.ImShow("识别窗口", resMat);
         //}
 
@@ -324,11 +363,11 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <param name="holdElementalTypes">保留的元素类型</param>
         public bool RollPhaseReRoll(params ElementalType[] holdElementalTypes)
         {
-            Bitmap gameSnapshot = capture.Capture();
+            Bitmap gameSnapshot = Capture();
 
 
             Dictionary<string, List<Point>> dictionary =
-                ImageRecognition.FindPicFromImage(gameSnapshot, ImageResCollections.RollPhaseDiceBitmaps, 0.75);
+                ImageRecognition.FindPicFromImage(gameSnapshot, ImageResCollections.RollPhaseDiceBitmaps, 0.73);
 
             int count = 0;
             foreach (KeyValuePair<string, List<Point>> kvp in dictionary)
@@ -336,10 +375,15 @@ namespace GeniusInvokationAutoToy.Strategy
                 count += kvp.Value.Count;
             }
 
-            MyLogger.Info($"骰子界面识别到了{count}个骰子");
+            
             if (count != 8)
             {
+                MyLogger.Warn($"骰子界面识别到了{count}个骰子");
                 return false;
+            }
+            else
+            {
+                MyLogger.Info($"骰子界面识别到了{count}个骰子");
             }
 
             foreach (KeyValuePair<string, List<Point>> kvp in dictionary)
@@ -354,7 +398,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 foreach (var point in kvp.Value)
                 {
                     MouseUtils.Click(point.X + windowRect.X, point.Y + windowRect.Y);
-                    Thread.Sleep(100);
+                    Sleep(100);
                 }
             }
 
@@ -366,7 +410,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public bool ClickConfirm()
         {
-            Point p = ImageRecognition.FindSingleTarget(capture.Capture().ToMat(),
+            Point p = ImageRecognition.FindSingleTarget(Capture().ToMat(),
                 ImageResCollections.ConfirmButton.ToMat());
             return MouseUtils.Click(MakeOffset(p));
         }
@@ -383,7 +427,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <returns></returns>
         public Dictionary<string, int> ActionPhaseDice()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             // 切割图片后再识别 加快速度 位置没啥用，所以切割后比较方便
             Dictionary<string, List<Point>> dictionary =
                 ImageRecognition.FindPicFromImage(CutRight(srcMat, srcMat.Width / 5),
@@ -408,11 +452,11 @@ namespace GeniusInvokationAutoToy.Strategy
         public void ActionPhaseElementalTuning()
         {
             MouseUtils.Click(windowRect.X + windowRect.Width / 2, windowRect.Y + windowRect.Height - 50);
-            Thread.Sleep(1500);
+            Sleep(1500);
             MouseUtils.LeftDown();
-            Thread.Sleep(100);
+            Sleep(100);
             MouseUtils.Move(windowRect.X + windowRect.Width - 50, windowRect.Y + windowRect.Height / 2);
-            Thread.Sleep(100);
+            Sleep(100);
             MouseUtils.LeftUp();
         }
 
@@ -421,7 +465,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void ActionPhaseElementalTuningConfirm()
         {
-            Point p = ImageRecognition.FindSingleTarget(capture.Capture().ToMat(),
+            Point p = ImageRecognition.FindSingleTarget(Capture().ToMat(),
                 ImageResCollections.ElementalTuningConfirmButton.ToMat());
             MouseUtils.Click(MakeOffset(p));
         }
@@ -435,7 +479,7 @@ namespace GeniusInvokationAutoToy.Strategy
             int x = windowRect.X + windowRect.Width - 100;
             int y = windowRect.Y + windowRect.Height - 120;
             MouseUtils.Click(x, y);
-            Thread.Sleep(800); // 等待动画彻底弹出
+            Sleep(800); // 等待动画彻底弹出
 
             return MouseUtils.Click(x, y);
         }
@@ -452,18 +496,18 @@ namespace GeniusInvokationAutoToy.Strategy
             int x = windowRect.X + windowRect.Width - 100 * skillIndex;
             int y = windowRect.Y + windowRect.Height - 120;
             MouseUtils.Click(x, y);
-            Thread.Sleep(600); // 等待动画彻底弹出
+            Sleep(600); // 等待动画彻底弹出
 
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             Point p = ImageRecognition.FindSingleTarget(CutRight(srcMat, srcMat.Width / 2),
                 ImageResCollections.ElementalDiceLackWarning.ToMat());
             if (p.IsEmpty)
             {
                 // 多点几次保证点击到
-                Thread.Sleep(500);
+                Sleep(500);
                 MyLogger.Info($"使用技能{skillIndex}");
                 MouseUtils.Click(x, y);
-                Thread.Sleep(200);
+                Sleep(200);
                 return MouseUtils.Click(x, y);
             }
 
@@ -496,7 +540,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     MyLogger.Info("当前骰子数量{}与期望的骰子数量{}不相等，重试", diceStatus.Sum(x => x.Value), expectDiceCount);
                     diceStatus = ActionPhaseDice();
                     retryCount++;
-                    Thread.Sleep(1000);
+                    Sleep(1000);
                 }
                 else
                 {
@@ -522,11 +566,11 @@ namespace GeniusInvokationAutoToy.Strategy
                     CurrentCardCount--;
                     MyLogger.Info("- {} 烧牌", i + 1);
                     ActionPhaseElementalTuning();
-                    Thread.Sleep(100);
+                    Sleep(100);
                     ActionPhaseElementalTuningConfirm();
-                    Thread.Sleep(1000); // 烧牌动画
+                    Sleep(1000); // 烧牌动画
                     ClickGameWindowCenter(); // 复位
-                    Thread.Sleep(500);
+                    Sleep(500);
                 }
             }
 
@@ -539,12 +583,12 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void RoundEnd()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             // 切割图片后再识别 加快速度 左上切割 不影响坐标
             Point p = ImageRecognition.FindSingleTarget(CutLeft(srcMat, srcMat.Width / 5),
                 ImageResCollections.RoundEndButton.ToMat());
             MouseUtils.Click(MakeOffset(p));
-            Thread.Sleep(1000); // 有弹出动画 
+            Sleep(1000); // 有弹出动画 
             MouseUtils.Click(MakeOffset(p));
         }
 
@@ -554,7 +598,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <returns></returns>
         public bool IsInMyAction()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             Point p = ImageRecognition.FindSingleTarget(CutLeft(srcMat, srcMat.Width / 5),
                 ImageResCollections.InMyActionBitmap.ToMat());
             return !p.IsEmpty;
@@ -566,7 +610,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <returns></returns>
         public bool IsInOpponentAction()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             Point p = ImageRecognition.FindSingleTarget(CutLeft(srcMat, srcMat.Width / 5),
                 ImageResCollections.InOpponentActionBitmap.ToMat());
             return !p.IsEmpty;
@@ -578,7 +622,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <returns></returns>
         public bool IsEndPhase()
         {
-            Mat srcMat = capture.Capture().ToMat();
+            Mat srcMat = Capture().ToMat();
             Point p = ImageRecognition.FindSingleTarget(CutLeft(srcMat, srcMat.Width / 5),
                 ImageResCollections.EndPhaseBitmap.ToMat());
             return !p.IsEmpty;
@@ -591,8 +635,23 @@ namespace GeniusInvokationAutoToy.Strategy
         /// <returns></returns>
         public bool IsActiveCharacterTakenOut()
         {
-            Point p = ImageRecognition.FindSingleTarget(capture.Capture().ToMat(),
+            Point p = ImageRecognition.FindSingleTarget(Capture().ToMat(),
                 ImageResCollections.CharacterTakenOutBitmap.ToMat());
+            return !p.IsEmpty;
+        }
+
+        /// <summary>
+        /// 是否对局完全结束
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDuelEnd()
+        {
+            Mat srcMat = Capture().ToMat();
+            // 切割左下
+            srcMat = new Mat(srcMat,
+                new Rect(0, srcMat.Height / 2, srcMat.Width / 2, srcMat.Height - srcMat.Height / 2));
+            Point p = ImageRecognition.FindSingleTarget(srcMat,
+                ImageResCollections.ExitDuelButton.ToMat());
             return !p.IsEmpty;
         }
 

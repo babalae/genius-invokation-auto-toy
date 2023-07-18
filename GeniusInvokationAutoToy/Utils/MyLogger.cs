@@ -13,6 +13,8 @@ namespace GeniusInvokationAutoToy.Utils
     {
         static Logger _logger => LogManager.GetCurrentClassLogger();
 
+        public static FormMain formMain;
+
         public static void Info(string message, params object[] args)
         {
             _logger.Info(message, args);
@@ -37,6 +39,16 @@ namespace GeniusInvokationAutoToy.Utils
         {
             _logger.Warn(message, args);
         }
+        public static void InfoSingleLine(string message, params object[] args)
+        {
+            formMain?.RtbConsoleDeleteLine();
+            _logger.Info(message, args);
+        }
 
+        public static void WarnSingleLine(string message, params object[] args)
+        {
+            formMain?.RtbConsoleDeleteLine();
+            _logger.Warn(message, args);
+        }
     }
 }

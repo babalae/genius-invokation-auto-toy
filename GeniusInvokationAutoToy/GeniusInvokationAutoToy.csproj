@@ -39,7 +39,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\Raiden.ico</ApplicationIcon>
+    <ApplicationIcon>Raiden.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -92,6 +92,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\MyException\RetryException.cs" />
+    <Compile Include="Core\MyException\DuelEndException.cs" />
     <Compile Include="Core\ImageRecognition.cs" />
     <Compile Include="Core\ImageResCollections.cs" />
     <Compile Include="Core\Model\ElementalType.cs" />
@@ -170,9 +172,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Paimon.ico" />
+    <Content Include="Raiden.ico" />
     <Content Include="Resources\Raiden.ico" />
-    <Content Include="Resources\Yoimiya.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Invokation\" />
