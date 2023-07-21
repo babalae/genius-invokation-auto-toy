@@ -18,7 +18,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 [📥Github下载（1.0）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.0/GeniusInvokationAutoToy.v1.0.zip)
 
-[📥蓝奏云](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
+[📥蓝奏云下载](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
 
 
 ## 使用方法
@@ -50,7 +50,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 问题反馈
 
-提 [Issue](https://github.com/babalae/genius-invokation-auto-toy/issues) 或 QQ群894935931
+提 [Issue](https://github.com/babalae/genius-invokation-auto-toy/issues) 或 QQ群[894935931](https://qm.qq.com/cgi-bin/qm/qr?k=u9Ij0HrDVQhvcoFvaiQGv38V3R7ZNY6K&jump_from=webapi&authKey=N++f74HhGHDzFje1dDD6E8vzuf45jmSFaPiVbc3Z7x/nTUWGwZ3UdSPqYQqPfOXK)
  
 ## 投喂
 
