@@ -4,6 +4,8 @@
 
 PC原神七圣召唤PVE全自动打牌。
 
+[视频演示](https://www.bilibili.com/video/BV13h4y1L7PH)
+
 当前只完整支持无缩放 1920x1080 的窗口化游戏，其它分辨率很有可能会没法正常识别
 
 支持角色邀请、每周来客挑战、部分大世界NPC挑战。
@@ -16,7 +18,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 [📥Github下载（1.0）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.0/GeniusInvokationAutoToy.v1.0.zip)
 
-[📥蓝奏云](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
+[📥蓝奏云下载](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
 
 
 ## 使用方法
@@ -29,14 +31,14 @@ PC原神七圣召唤PVE全自动打牌。
 
 1、首先你的牌组必须是 **莫娜、砂糖、琴**，顺序不能变，带什么牌无所谓。 [牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)
 
-<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/7723febd-9cef-4dba-aeed-f7c4b1bee992"/>
+<img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p1.png"/>
 
 
-2、**窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！**
+2、**窗口化游戏，只支持无缩放1920x1080，游戏整个界面不能被其他窗口遮挡！游戏不能使用任何显卡滤镜！**
 
 3、在游戏内进入七圣召唤对局，到**初始手牌**界面，如下图：
 
-<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/900fb60c-408f-4aa6-9ee0-8955b5a1bf4e"/>
+<img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p2.png"/>
 
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键<kbd>F11</kbd>）。
 
@@ -48,7 +50,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 问题反馈
 
-提 [Issue](https://github.com/babalae/genius-invokation-auto-toy/issues) 或 QQ群894935931
+提 [Issue](https://github.com/babalae/genius-invokation-auto-toy/issues) 或 QQ群[894935931](https://qm.qq.com/cgi-bin/qm/qr?k=u9Ij0HrDVQhvcoFvaiQGv38V3R7ZNY6K&jump_from=webapi&authKey=N++f74HhGHDzFje1dDD6E8vzuf45jmSFaPiVbc3Z7x/nTUWGwZ3UdSPqYQqPfOXK)
  
 ## 投喂
 
