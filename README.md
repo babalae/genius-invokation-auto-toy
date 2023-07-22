@@ -34,7 +34,7 @@ PC原神七圣召唤PVE全自动打牌。
 <img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p1.png"/>
 
 
-2、**窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！**
+2、**窗口化游戏，只支持无缩放1920x1080，游戏整个界面不能被其他窗口遮挡！游戏不能使用任何显卡滤镜！**
 
 3、在游戏内进入七圣召唤对局，到**初始手牌**界面，如下图：
 
