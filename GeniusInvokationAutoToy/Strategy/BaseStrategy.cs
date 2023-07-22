@@ -64,9 +64,10 @@ namespace GeniusInvokationAutoToy.Strategy
             }
             else
             {
-                ImageRecognition.WidthScale = w * 1.0 / 1929;  // 1929是计算了边缘
+                ImageRecognition.WidthScale = w * 1.0 / 1929; // 1929是计算了边缘
                 //ImageRecognition.HeightScale = h * 1.0 / 1109; // 1109是计算了窗口标题栏
             }
+
             MyLogger.Debug($"匹配图片缩放比率：{ImageRecognition.WidthScale}");
             return new Rectangle(x, y, w, h);
         }
@@ -101,10 +102,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
         public async Task RunAsync(CancellationTokenSource cts1)
         {
-            await Task.Run(() =>
-            {
-                Run(cts1);
-            });
+            await Task.Run(() => { Run(cts1); });
         }
 
         /// <summary>
@@ -177,7 +175,8 @@ namespace GeniusInvokationAutoToy.Strategy
 
                 return null;
             }
-            if (y1 < windowRect.Height/2 || y2 < windowRect.Height / 2)
+
+            if (y1 < windowRect.Height / 2 || y2 < windowRect.Height / 2)
             {
                 MyLogger.Warn("识别的角色卡牌区域（Y轴）错误：y1:{} y2:{}", y1, y2);
                 if (ImageRecognition.IsDebug)
@@ -407,7 +406,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 count += kvp.Value.Count;
             }
 
-            
+
             if (count != 8)
             {
                 MyLogger.Warn($"骰子界面识别到了{count}个骰子");
@@ -448,6 +447,7 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 return false;
             }
+
             return MouseUtils.Click(MakeOffset(p));
         }
 
@@ -619,7 +619,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
 
             int needSpecifyElementDiceCount = diceCost - diceStatus[ElementalType.Omni.ToLowerString()] -
-                                                diceStatus[elementalType.ToLowerString()];
+                                              diceStatus[elementalType.ToLowerString()];
             if (needSpecifyElementDiceCount > 0)
             {
                 if (CurrentCardCount < needSpecifyElementDiceCount)
@@ -661,6 +661,33 @@ namespace GeniusInvokationAutoToy.Strategy
             MouseUtils.Click(MakeOffset(p));
             Sleep(300);
             ClickGameWindowCenter(); // 复位
+        }
+
+        /// <summary>
+        /// 是否是再角色出战选择界面
+        /// 可重试方法
+        /// </summary>
+        public void IsInCharacterPickRetryThrowable()
+        {
+            if (!IsInCharacterPick())
+            {
+                throw new RetryException("当前不在角色出战选择界面");
+            }
+        }
+
+        /// <summary>
+        /// 是否是再角色出战选择界面
+        /// </summary>
+        /// <returns></returns>
+        public bool IsInCharacterPick()
+        {
+            Mat srcMat = Capture().ToMat();
+            // 切割右下
+            srcMat = new Mat(srcMat,
+                new Rect(srcMat.Width / 2, srcMat.Height / 2, srcMat.Width - srcMat.Width / 2,
+                    srcMat.Height - srcMat.Height / 2));
+            Point p = ImageRecognition.FindSingleTarget(srcMat, ImageResCollections.InCharacterPickBitmap.ToMat());
+            return !p.IsEmpty;
         }
 
         /// <summary>

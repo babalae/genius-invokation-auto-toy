@@ -102,9 +102,13 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 2. 选择出战角色
             // 此处选择第2个角色 雷神
-            MyLogger.Info("等待6s动画...");
-            Sleep(6000);
+            MyLogger.Info("等待3s动画...");
+            Sleep(3000);
 
+            // 是否是再角色出战选择界面
+            Retry.Do(IsInCharacterPickRetryThrowable, TimeSpan.FromSeconds(1), 5);
+            MyLogger.Info("识别到已经在角色出战界面，等待1.5s");
+            Sleep(1500);
             // 识别角色所在区域
             Retry.Do(() => ChooseCharacterFirst(2), TimeSpan.FromSeconds(1), 5);
 

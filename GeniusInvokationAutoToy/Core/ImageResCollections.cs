@@ -53,6 +53,7 @@ namespace GeniusInvokationAutoToy.Core
         public static Bitmap EndPhaseBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\回合结算阶段.png"));
         public static Bitmap ElementalDiceLackWarning = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\元素骰子不足.png"));
         public static Bitmap CharacterTakenOutBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色死亡.png"));
+        public static Bitmap InCharacterPickBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\出战角色.png"));
 
     }
 }
