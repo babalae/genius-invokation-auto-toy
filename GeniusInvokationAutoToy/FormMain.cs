@@ -53,11 +53,13 @@ namespace GeniusInvokationAutoToy
             }
 
             this.Text += currentVersion;
+            GAHelper.Instance.RequestPageView($"/main/{thisVersion}", $"进入七圣召唤自动打牌{thisVersion}版本主界面");
+
+
             cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
             //cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
             chkTopMost.Checked = Properties.Settings.Default.TopMostChecked;
 
-            //GAHelper.Instance.RequestPageView($"/main/{thisVersion}", $"进入{thisVersion}版本主界面");
 
             rtbConsole.Text = @"软件在Github上开源且免费 by huiyadanli
 
