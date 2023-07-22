@@ -53,8 +53,9 @@ namespace GeniusInvokationAutoToy
             }
 
             this.Text += currentVersion;
-            cboStrategy.SelectedIndex = 0;
-            cboGameResolution.SelectedIndex = 0;
+            cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
+            //cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
+            chkTopMost.Checked = Properties.Settings.Default.TopMostChecked;
 
             //GAHelper.Instance.RequestPageView($"/main/{thisVersion}", $"进入{thisVersion}版本主界面");
 
@@ -166,20 +167,10 @@ namespace GeniusInvokationAutoToy
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //Properties.Settings.Default.FrameRate = nudFrameRate.Value;
-            //Properties.Settings.Default.AutoPullUpChecked = chkAutoPullUp.Checked;
-            //Properties.Settings.Default.TopMostChecked = chkTopMost.Checked;
-            //Properties.Settings.Default.DisplayDetectChecked = chkDisplayDetectForm.Checked;
-            //Properties.Settings.Default.AlwaysHideAreaChecked = chkAlwaysHideArea.Checked;
-
-            //Properties.Settings.Default.FormMainLocation = Location;
-            //Properties.Settings.Default.StrainBarAreaLocation = strainBarArea.Location;
-            //Properties.Settings.Default.StrainBarAreaSize = strainBarArea.Size;
-            //Properties.Settings.Default.PullUpRodAreaLocation = pullUpRodArea.Location;
-            //Properties.Settings.Default.PullUpRodAreaSize = pullUpRodArea.Size;
-            //Properties.Settings.Default.Save();
-            //strainBarArea.Close();
-            //pullUpRodArea.Close();
+            Properties.Settings.Default.TopMostChecked = chkTopMost.Checked;
+            Properties.Settings.Default.CboStrategySelectIndex = cboStrategy.SelectedIndex;
+            //Properties.Settings.Default.CboGameResolutionSelectIndex = cboGameResolution.SelectedIndex;
+            Properties.Settings.Default.Save();
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

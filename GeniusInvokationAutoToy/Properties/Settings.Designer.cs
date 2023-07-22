@@ -25,42 +25,6 @@ namespace GeniusInvokationAutoToy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point StrainBarAreaLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["StrainBarAreaLocation"]));
-            }
-            set {
-                this["StrainBarAreaLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("599, 50")]
-        public global::System.Drawing.Size StrainBarAreaSize {
-            get {
-                return ((global::System.Drawing.Size)(this["StrainBarAreaSize"]));
-            }
-            set {
-                this["StrainBarAreaSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100, 100")]
-        public global::System.Drawing.Point FormMainLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["FormMainLocation"]));
-            }
-            set {
-                this["FormMainLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool TopMostChecked {
             get {
@@ -73,49 +37,25 @@ namespace GeniusInvokationAutoToy.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public decimal FrameRate {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int CboStrategySelectIndex {
             get {
-                return ((decimal)(this["FrameRate"]));
+                return ((int)(this["CboStrategySelectIndex"]));
             }
             set {
-                this["FrameRate"] = value;
+                this["CboStrategySelectIndex"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AutoPullUpChecked {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int CboGameResolutionSelectIndex {
             get {
-                return ((bool)(this["AutoPullUpChecked"]));
+                return ((int)(this["CboGameResolutionSelectIndex"]));
             }
             set {
-                this["AutoPullUpChecked"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool DisplayDetectChecked {
-            get {
-                return ((bool)(this["DisplayDetectChecked"]));
-            }
-            set {
-                this["DisplayDetectChecked"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AlwaysHideAreaChecked {
-            get {
-                return ((bool)(this["AlwaysHideAreaChecked"]));
-            }
-            set {
-                this["AlwaysHideAreaChecked"] = value;
+                this["CboGameResolutionSelectIndex"] = value;
             }
         }
     }
