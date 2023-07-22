@@ -16,7 +16,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 下载地址
 
-[📥Github下载（1.0）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.0/GeniusInvokationAutoToy.v1.0.zip)
+[📥Github下载（1.1）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.1/GeniusInvokationAutoToy.v1.1.zip)
 
 [📥蓝奏云下载](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
 
@@ -29,10 +29,10 @@ PC原神七圣召唤PVE全自动打牌。
   * [.NET Framework 4.7.2](https://support.microsoft.com/zh-cn/topic/%E9%80%82%E7%94%A8%E4%BA%8E-windows-%E7%9A%84-microsoft-net-framework-4-7-2-%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-05a72734-2127-a15d-50cf-daf56d5faec2) 或更高版本。**低于此版本在打开程序时可能无反应，或者直接报错**。
 
 
-1、首先你的牌组必须是 **莫娜、砂糖、琴**，顺序不能变，带什么牌无所谓。 [牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)
+1、首先你的牌组必须是**【莫娜、砂糖、琴】**或者**【刻晴、雷电将军、甘雨】**，顺序不能变，带什么牌无所谓。（[颠勺牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)，雷神牌组来源NGA）
 
 <img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p1.png"/>
-
+<img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/26b87618-473c-4a48-b5b3-dab0842118d5"/>
 
 2、**窗口化游戏，只支持无缩放1920x1080，游戏整个界面不能被其他窗口遮挡！游戏不能使用任何显卡滤镜！**
 
