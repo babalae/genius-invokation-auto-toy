@@ -53,13 +53,16 @@ namespace GeniusInvokationAutoToy
             }
 
             this.Text += currentVersion;
+            cboStrategy.SelectedIndex = 0;
+            cboGameResolution.SelectedIndex = 0;
+
             //GAHelper.Instance.RequestPageView($"/main/{thisVersion}", $"进入{thisVersion}版本主界面");
 
             rtbConsole.Text = @"软件在Github上开源且免费 by huiyadanli
 
 支持角色邀请、每周来客挑战、大世界NPC挑战（部分场景不支持、或者打不过/拿不满奖励）。
 
-1、牌组必须是莫娜、砂糖、琴，顺序不能变，带什么牌无所谓
+1、牌组必须是【莫娜、砂糖、琴】或者【刻晴、雷电将军、甘雨】（选择对应的策略），顺序不能变，带什么牌无所谓
 2、窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！
 3、在游戏内进入七圣召唤对局，到初始手牌界面
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键F11）。
@@ -121,8 +124,14 @@ namespace GeniusInvokationAutoToy
 
             rtbConsole.Text = ""; // 清空日志
 
-            strategy = new MonaSucroseJeanStrategy(window);
-
+            if (cboStrategy.SelectedIndex == 0)
+            {
+                strategy = new MonaSucroseJeanStrategy(window);
+            }
+            else
+            {
+                strategy = new KeqingRaidenGanyuStrategy(window);
+            }
 
             cts = new CancellationTokenSource(); ;
             await strategy.RunAsync(cts);
@@ -220,5 +229,6 @@ namespace GeniusInvokationAutoToy
         }
 
         #endregion
+
     }
 }

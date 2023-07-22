@@ -123,6 +123,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\ImageCapture.cs" />
     <Compile Include="Strategy\BaseStrategy.cs" />
+    <Compile Include="Strategy\KeqingRaidenGanyuStrategy.cs" />
     <Compile Include="Strategy\MonaSucroseJeanStrategy.cs" />
     <Compile Include="Utils\Device.cs" />
     <Compile Include="Utils\Extension\RetryExtension.cs" />

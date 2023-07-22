@@ -169,7 +169,17 @@ namespace GeniusInvokationAutoToy.Strategy
 
             if (y1 == 0 || y2 == 0)
             {
-                MyLogger.Warn("未识别到卡牌区域（Y轴）");
+                MyLogger.Warn("未识别到角色卡牌区域（Y轴）");
+                if (ImageRecognition.IsDebug)
+                {
+                    Cv2.ImShow("识别窗口", srcMat);
+                }
+
+                return null;
+            }
+            if (y1 < windowRect.Height/2 || y2 < windowRect.Height / 2)
+            {
+                MyLogger.Warn("识别的角色卡牌区域（Y轴）错误：y1:{} y2:{}", y1, y2);
                 if (ImageRecognition.IsDebug)
                 {
                     Cv2.ImShow("识别窗口", srcMat);
@@ -218,7 +228,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
             if (colLines.Count != 6)
             {
-                MyLogger.Warn("未识别到卡牌区域（X轴存在{}个识别点）", colLines.Count);
+                MyLogger.Warn("未识别到角色卡牌区域（X轴存在{}个识别点）", colLines.Count);
                 if (ImageRecognition.IsDebug)
                 {
                     Cv2.ImShow("识别窗口", srcMat);
@@ -441,6 +451,40 @@ namespace GeniusInvokationAutoToy.Strategy
             return MouseUtils.Click(MakeOffset(p));
         }
 
+        public void ReRollDice(params ElementalType[] holdElementalTypes)
+        {
+            // 3.重投骰子
+            MyLogger.Info("等待5s投骰动画...");
+            Sleep(5000);
+            int retryCount = 0;
+            // 保留 风、水、万能 骰子
+            while (!RollPhaseReRoll(holdElementalTypes))
+            {
+                retryCount++;
+
+                if (IsDuelEnd())
+                {
+                    throw new DuelEndException("对战已结束,停止自动打牌！");
+                }
+
+                MyLogger.Warn("识别骰子数量不正确,第{}次重试中...", retryCount);
+                Sleep(1000);
+                if (retryCount > 20)
+                {
+                    throw new Exception("识别骰子数量不正确,重试超时,停止自动打牌！");
+                }
+            }
+
+            ClickConfirm();
+            MyLogger.Info("选择需要重投的骰子后点击确认完毕");
+
+            Sleep(1000);
+            // 鼠标移动到中心
+            MouseUtils.Move(windowRect.GetCenterPoint());
+
+            MyLogger.Info("等待10s对方重投");
+            Sleep(10000);
+        }
 
         public Point MakeOffset(Point p)
         {
@@ -574,19 +618,19 @@ namespace GeniusInvokationAutoToy.Strategy
             }
 
 
-            int needHydroDiceCount = diceCost - diceStatus[ElementalType.Omni.ToLowerString()] -
-                                     diceStatus[elementalType.ToLowerString()];
-            if (needHydroDiceCount > 0)
+            int needSpecifyElementDiceCount = diceCost - diceStatus[ElementalType.Omni.ToLowerString()] -
+                                                diceStatus[elementalType.ToLowerString()];
+            if (needSpecifyElementDiceCount > 0)
             {
-                if (CurrentCardCount < needHydroDiceCount)
+                if (CurrentCardCount < needSpecifyElementDiceCount)
                 {
-                    MyLogger.Info("当前手牌数{}小于需要烧牌数量{}，无法释放技能", CurrentCardCount, needHydroDiceCount);
+                    MyLogger.Info("当前手牌数{}小于需要烧牌数量{}，无法释放技能", CurrentCardCount, needSpecifyElementDiceCount);
                     return false;
                 }
 
-                MyLogger.Info("当前需要的元素骰子数量不足3个，还缺{}个，当前手牌数{}，烧牌", needHydroDiceCount, CurrentCardCount);
+                MyLogger.Info("当前需要的元素骰子数量不足3个，还缺{}个，当前手牌数{}，烧牌", needSpecifyElementDiceCount, CurrentCardCount);
 
-                for (int i = 0; i < needHydroDiceCount; i++)
+                for (int i = 0; i < needSpecifyElementDiceCount; i++)
                 {
                     CurrentCardCount--;
                     MyLogger.Info("- {} 烧牌", i + 1);
@@ -693,6 +737,117 @@ namespace GeniusInvokationAutoToy.Strategy
         {
             srcMat = new Mat(srcMat, new Rect(0, 0, saveLeftWidth, srcMat.Height));
             return srcMat;
+        }
+
+        /// <summary>
+        /// 等待我的回合
+        /// 我方角色可能在此期间阵亡
+        /// </summary>
+        public void WaitForMyTurn(int waitTime = 0)
+        {
+            if (waitTime > 0)
+            {
+                MyLogger.Info($"等待对方行动{waitTime / 1000}s");
+                Sleep(waitTime);
+            }
+
+            // 判断对方行动是否已经结束
+            int retryCount = 0;
+            while (true)
+            {
+                if (IsInMyAction())
+                {
+                    if (IsActiveCharacterTakenOut())
+                    {
+                        CurrentTakenOutCharacterCount++;
+                        MyLogger.Info("我方角色已阵亡，选择新的出战角色");
+                        SwitchCharacterWhenTakenOut(3);
+                        SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
+                        SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
+                        ClickGameWindowCenter();
+                        Sleep(2000); // 切人动画
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else if (IsDuelEnd())
+                {
+                    throw new DuelEndException("对战已结束,停止自动打牌！");
+                }
+
+                retryCount++;
+                if (retryCount >= 60)
+                {
+                    throw new Exception("等待对方行动超时,停止自动打牌！");
+                }
+
+                MyLogger.Info("对方仍在行动中,继续等待(次数{})...", retryCount);
+                Sleep(1000);
+            }
+        }
+
+        /// <summary>
+        /// 等待对方回合 和 回合结束阶段
+        /// 我方角色可能在此期间阵亡
+        /// </summary>
+        public void WaitOpponentAction()
+        {
+            Random rd = new Random();
+            Sleep(3000 + rd.Next(1, 1000));
+            // 判断对方行动是否已经结束
+            int retryCount = 0;
+            while (true)
+            {
+                if (IsInOpponentAction())
+                {
+                    MyLogger.Info("对方仍在行动中,继续等待(次数{})...", retryCount);
+                }
+                else if (IsEndPhase())
+                {
+                    MyLogger.Info("正在回合结束阶段,继续等待(次数{})...", retryCount);
+                }
+                else if (IsInMyAction())
+                {
+                    if (IsActiveCharacterTakenOut())
+                    {
+                        CurrentTakenOutCharacterCount++;
+                        MyLogger.Info("我方角色已阵亡，选择新的出战角色");
+                        SwitchCharacterWhenTakenOut(3);
+                        SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
+                        SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
+                        ClickGameWindowCenter();
+                        MyLogger.Info("依次切换新角色完成，等待2s");
+                        Sleep(2000); // 切人动画
+                    }
+                }
+                else if (IsDuelEnd())
+                {
+                    throw new DuelEndException("对战已结束,停止自动打牌！");
+                }
+                else
+                {
+                    // 至少走三次判断才能确定对方行动结束
+                    if (retryCount > 2)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        MyLogger.Error("等待对方回合 和 回合结束阶段 时程序未识别到有效内容(次数{})...", retryCount);
+                    }
+                }
+
+                retryCount++;
+                if (retryCount >= 30)
+                {
+                    throw new Exception("等待对方行动超时,停止自动打牌！");
+                }
+
+
+                Sleep(1000 + rd.Next(1, 500));
+            }
         }
     }
 }

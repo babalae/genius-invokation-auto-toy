@@ -105,8 +105,8 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 2. 选择出战角色
             // 此处选择第一个角色 莫娜
-            MyLogger.Info("等待5s动画...");
-            Sleep(5000);
+            MyLogger.Info("等待6s动画...");
+            Sleep(6000);
 
             // 识别角色所在区域
             Retry.Do(() => ChooseCharacterFirst(1), TimeSpan.FromSeconds(1), 5);
@@ -115,143 +115,6 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 初始化手牌
             CurrentCardCount = 5;
-        }
-
-        private void ReRollDice(params ElementalType[] holdElementalTypes)
-        {
-            // 3.重投骰子
-            MyLogger.Info("等待5s投骰动画...");
-            Sleep(5000);
-            int retryCount = 0;
-            // 保留 风、水、万能 骰子
-            while (!RollPhaseReRoll(holdElementalTypes))
-            {
-                retryCount++;
-
-                if (IsDuelEnd())
-                {
-                    throw new DuelEndException("对战已结束,停止自动打牌！");
-                }
-
-                MyLogger.Warn("识别骰子数量不正确,第{}次重试中...", retryCount);
-                Sleep(1000);
-                if (retryCount > 20)
-                {
-                    throw new Exception("识别骰子数量不正确,重试超时,停止自动打牌！");
-                }
-            }
-
-            ClickConfirm();
-            MyLogger.Info("选择需要重投的骰子后点击确认完毕");
-
-            Sleep(1000);
-            // 鼠标移动到中心
-            MouseUtils.Move(windowRect.GetCenterPoint());
-
-            MyLogger.Info("等待10s对方重投");
-            Sleep(10000);
-        }
-
-        /// <summary>
-        /// 等待我的回合
-        /// 我方角色可能在此期间阵亡
-        /// </summary>
-        public void WaitForMyTurn(int waitTime = 0)
-        {
-            if (waitTime > 0)
-            {
-                MyLogger.Info($"等待对方行动{waitTime / 1000}s");
-                Sleep(waitTime);
-            }
-
-            // 判断对方行动是否已经结束
-            int retryCount = 0;
-            while (true)
-            {
-                if (IsInMyAction())
-                {
-                    if (IsActiveCharacterTakenOut())
-                    {
-                        CurrentTakenOutCharacterCount++;
-                        MyLogger.Info("我方角色已阵亡，选择新的出战角色");
-                        SwitchCharacterWhenTakenOut(3);
-                        SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
-                        SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
-                        ClickGameWindowCenter();
-                        Sleep(2000); // 切人动画
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                else if (IsDuelEnd())
-                {
-                    throw new DuelEndException("对战已结束,停止自动打牌！");
-                }
-
-                retryCount++;
-                if (retryCount >= 60)
-                {
-                    throw new Exception("等待对方行动超时,停止自动打牌！");
-                }
-
-                MyLogger.Info("对方仍在行动中,继续等待(次数{})...", retryCount);
-                Sleep(1000);
-            }
-        }
-
-        /// <summary>
-        /// 等待对方回合 和 回合结束阶段
-        /// 我方角色可能在此期间阵亡
-        /// </summary>
-        public void WaitOpponentAction()
-        {
-            Sleep(3000);
-            // 判断对方行动是否已经结束
-            int retryCount = 0;
-            while (true)
-            {
-                if (IsInOpponentAction())
-                {
-                    MyLogger.Info("对方仍在行动中,继续等待(次数{})...", retryCount);
-                }
-                else if (IsEndPhase())
-                {
-                    MyLogger.Info("正在回合结束阶段,继续等待(次数{})...", retryCount);
-                }
-                else if (IsInMyAction())
-                {
-                    if (IsActiveCharacterTakenOut())
-                    {
-                        CurrentTakenOutCharacterCount++;
-                        MyLogger.Info("我方角色已阵亡，选择新的出战角色");
-                        SwitchCharacterWhenTakenOut(3);
-                        SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
-                        SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
-                        ClickGameWindowCenter();
-                        MyLogger.Info("依次切换新角色完成，等待2s");
-                        Sleep(2000); // 切人动画
-                    }
-                }
-                else if (IsDuelEnd())
-                {
-                    throw new DuelEndException("对战已结束,停止自动打牌！");
-                }
-                else
-                {
-                    break;
-                }
-
-                retryCount++;
-                if (retryCount >= 30)
-                {
-                    throw new Exception("等待对方行动超时,停止自动打牌！");
-                }
-
-
-                Sleep(1500);
-            }
         }
 
         /// <summary>
@@ -316,7 +179,7 @@ namespace GeniusInvokationAutoToy.Strategy
             WaitForMyTurn(1000);
 
             // 1 回合2 行动1 砂糖使用1次二技能
-            MyLogger.Info("回合1 行动1 砂糖使用1次二技能");
+            MyLogger.Info("回合2 行动1 砂糖使用1次二技能");
             bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Anemo, 8);
             if (!useSkillRes)
             {

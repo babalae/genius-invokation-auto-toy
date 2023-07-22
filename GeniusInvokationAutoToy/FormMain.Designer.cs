@@ -38,6 +38,10 @@ namespace GeniusInvokationAutoToy
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.lblYSStatus = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cboGameResolution = new System.Windows.Forms.ComboBox();
+            this.cboStrategy = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // timerCapture
@@ -47,10 +51,10 @@ namespace GeniusInvokationAutoToy
             // rtbConsole
             // 
             this.rtbConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rtbConsole.Location = new System.Drawing.Point(9, 76);
-            this.rtbConsole.Margin = new System.Windows.Forms.Padding(2);
+            this.rtbConsole.Location = new System.Drawing.Point(9, 93);
+            this.rtbConsole.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rtbConsole.Name = "rtbConsole";
-            this.rtbConsole.Size = new System.Drawing.Size(387, 406);
+            this.rtbConsole.Size = new System.Drawing.Size(387, 390);
             this.rtbConsole.TabIndex = 7;
             this.rtbConsole.Text = "";
             this.rtbConsole.TextChanged += new System.EventHandler(this.rtbConsole_TextChanged);
@@ -59,7 +63,7 @@ namespace GeniusInvokationAutoToy
             // 
             this.chkTopMost.AutoSize = true;
             this.chkTopMost.Location = new System.Drawing.Point(142, 14);
-            this.chkTopMost.Margin = new System.Windows.Forms.Padding(2);
+            this.chkTopMost.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkTopMost.Name = "chkTopMost";
             this.chkTopMost.Size = new System.Drawing.Size(72, 16);
             this.chkTopMost.TabIndex = 9;
@@ -69,10 +73,10 @@ namespace GeniusInvokationAutoToy
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Location = new System.Drawing.Point(9, 35);
-            this.btnSwitch.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSwitch.Location = new System.Drawing.Point(266, 38);
+            this.btnSwitch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSwitch.Name = "btnSwitch";
-            this.btnSwitch.Size = new System.Drawing.Size(323, 30);
+            this.btnSwitch.Size = new System.Drawing.Size(130, 51);
             this.btnSwitch.TabIndex = 10;
             this.btnSwitch.Text = "开始自动打牌(F11)";
             this.btnSwitch.UseVisualStyleBackColor = true;
@@ -110,11 +114,60 @@ namespace GeniusInvokationAutoToy
             this.label1.TabIndex = 18;
             this.label1.Text = "原神状态：";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(11, 43);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.TabIndex = 22;
+            this.label2.Text = "卡牌策略：";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(11, 71);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(77, 12);
+            this.label3.TabIndex = 23;
+            this.label3.Text = "游戏分辨率：";
+            // 
+            // cboGameResolution
+            // 
+            this.cboGameResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboGameResolution.FormattingEnabled = true;
+            this.cboGameResolution.Items.AddRange(new object[] {
+            "1920x1080"});
+            this.cboGameResolution.Location = new System.Drawing.Point(99, 69);
+            this.cboGameResolution.Margin = new System.Windows.Forms.Padding(2);
+            this.cboGameResolution.Name = "cboGameResolution";
+            this.cboGameResolution.Size = new System.Drawing.Size(149, 20);
+            this.cboGameResolution.TabIndex = 21;
+            // 
+            // cboStrategy
+            // 
+            this.cboStrategy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboStrategy.FormattingEnabled = true;
+            this.cboStrategy.Items.AddRange(new object[] {
+            "莫娜砂糖琴",
+            "刻晴雷电将军甘雨"});
+            this.cboStrategy.Location = new System.Drawing.Point(99, 41);
+            this.cboStrategy.Margin = new System.Windows.Forms.Padding(2);
+            this.cboStrategy.Name = "cboStrategy";
+            this.cboStrategy.Size = new System.Drawing.Size(149, 20);
+            this.cboStrategy.TabIndex = 20;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(407, 494);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.cboGameResolution);
+            this.Controls.Add(this.cboStrategy);
             this.Controls.Add(this.lblYSStatus);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.linkLabel1);
@@ -122,7 +175,7 @@ namespace GeniusInvokationAutoToy
             this.Controls.Add(this.chkTopMost);
             this.Controls.Add(this.rtbConsole);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormMain";
             this.Text = "原神自动打牌（自动七胜召唤对局）";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
@@ -140,6 +193,10 @@ namespace GeniusInvokationAutoToy
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label lblYSStatus;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cboGameResolution;
+        private System.Windows.Forms.ComboBox cboStrategy;
     }
 }
 
