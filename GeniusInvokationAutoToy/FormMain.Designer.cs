@@ -137,6 +137,7 @@ namespace GeniusInvokationAutoToy
             // cboGameResolution
             // 
             this.cboGameResolution.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboGameResolution.Enabled = false;
             this.cboGameResolution.FormattingEnabled = true;
             this.cboGameResolution.Items.AddRange(new object[] {
             "1920x1080"});
