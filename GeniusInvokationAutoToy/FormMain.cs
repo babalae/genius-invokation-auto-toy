@@ -53,7 +53,7 @@ namespace GeniusInvokationAutoToy
             }
 
             this.Text += currentVersion;
-            GAHelper.Instance.RequestPageView($"七圣召唤自动打牌_{thisVersion}_主界面", $"进入七圣召唤自动打牌{thisVersion}版本主界面");
+            GAHelper.Instance.RequestPageView($"七圣召唤自动打牌_{thisVersion}", $"进入七圣召唤自动打牌{thisVersion}版本主界面");
 
 
             cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
