@@ -18,6 +18,7 @@ namespace GeniusInvokationAutoToy.Strategy
     ///【原神】七圣召唤-史上最无脑PVE牌组！连牌都不用出，暴打NPC！https://www.bilibili.com/video/BV1ZP41197Ws
     /// 虽然颠勺队伍早就有了，但是第一次知道PVE也好用
     /// </summary>
+    [Obsolete]
     public class MonaSucroseJeanStrategy : BaseStrategy
     {
         /// <summary>
@@ -72,7 +73,6 @@ namespace GeniusInvokationAutoToy.Strategy
             catch (DuelEndException ex)
             {
                 MyLogger.Info(ex.Message);
-
             }
             catch (Exception ex)
             {

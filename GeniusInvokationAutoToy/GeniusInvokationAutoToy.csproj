@@ -124,8 +124,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\ImageCapture.cs" />
     <Compile Include="Strategy\BaseStrategy.cs" />
+    <Compile Include="Core\GameControl.cs" />
     <Compile Include="Strategy\KeqingRaidenGanyuStrategy.cs" />
+    <Compile Include="Strategy\Model\Character.cs" />
+    <Compile Include="Strategy\Model\Duel.cs" />
+    <Compile Include="Strategy\Model\RoundStrategy.cs" />
+    <Compile Include="Strategy\Model\Skill.cs" />
     <Compile Include="Strategy\MonaSucroseJeanStrategy.cs" />
+    <Compile Include="Strategy\Script\ScriptParser.cs" />
     <Compile Include="Utils\Device.cs" />
     <Compile Include="Utils\Extension\RetryExtension.cs" />
     <Compile Include="Utils\GAHelper.cs" />

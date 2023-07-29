@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
+    [Obsolete]
     public class KeqingRaidenGanyuStrategy : BaseStrategy
     {
         /// <summary>

@@ -46,6 +46,32 @@ namespace GeniusInvokationAutoToy.Core.Model
             }
         }
 
+        public static ElementalType ChineseToElementalType(this string type)
+        {
+            type = type.ToLower();
+            switch (type)
+            {
+                case "全":
+                    return ElementalType.Omni;
+                case "冰":
+                    return ElementalType.Cryo;
+                case "水":
+                    return ElementalType.Hydro;
+                case "火":
+                    return ElementalType.Pyro;
+                case "雷":
+                    return ElementalType.Electro;
+                case "草":
+                    return ElementalType.Dendro;
+                case "风":
+                    return ElementalType.Anemo;
+                case "岩":
+                    return ElementalType.Geo;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }   
+        }
+
         public static string ToChinese(this ElementalType type)
         {
             switch (type)

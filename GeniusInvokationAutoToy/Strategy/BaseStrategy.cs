@@ -17,6 +17,7 @@ using Point = System.Drawing.Point;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
+    [Obsolete]
     public abstract class BaseStrategy
     {
         protected ImageCapture capture = new ImageCapture();
