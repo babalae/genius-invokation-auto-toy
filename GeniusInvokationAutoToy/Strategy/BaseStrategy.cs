@@ -17,15 +17,15 @@ using Point = System.Drawing.Point;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
-    [Obsolete]
+
     public abstract class BaseStrategy
     {
         protected ImageCapture capture = new ImageCapture();
         protected YuanShenWindow window;
         protected Rectangle windowRect;
 
-        protected int CurrentCardCount;
-        protected int CurrentTakenOutCharacterCount;
+        protected int CurrentCardCount { get; set; }
+        protected int CurrentTakenOutCharacterCount { get; set; }
 
         protected CancellationTokenSource cts;
 
@@ -104,6 +104,31 @@ namespace GeniusInvokationAutoToy.Strategy
         public async Task RunAsync(CancellationTokenSource cts1)
         {
             await Task.Run(() => { Run(cts1); });
+        }
+
+
+        protected void CommonDuelPrepare()
+        {
+            // 1. 选择初始手牌
+            Sleep(1000);
+            MyLogger.Info("开始选择初始手牌");
+            while (!ClickConfirm())
+            {
+                // 循环等待选择卡牌画面
+                Sleep(1000);
+            }
+
+            MyLogger.Info("点击确认");
+
+            // 2. 选择出战角色
+            // 此处选择第2个角色 雷神
+            MyLogger.Info("等待3s动画...");
+            Sleep(3000);
+
+            // 是否是再角色出战选择界面
+            Retry.Do(IsInCharacterPickRetryThrowable, TimeSpan.FromSeconds(1), 5);
+            MyLogger.Info("识别到已经在角色出战界面，等待1.5s");
+            Sleep(1500);
         }
 
         /// <summary>
@@ -629,7 +654,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     return false;
                 }
 
-                MyLogger.Info("当前需要的元素骰子数量不足3个，还缺{}个，当前手牌数{}，烧牌", needSpecifyElementDiceCount, CurrentCardCount);
+                MyLogger.Info("当前需要的元素骰子数量不足{}个，还缺{}个，当前手牌数{}，烧牌", diceCost, needSpecifyElementDiceCount, CurrentCardCount);
 
                 for (int i = 0; i < needSpecifyElementDiceCount; i++)
                 {

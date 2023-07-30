@@ -29,9 +29,7 @@ namespace GeniusInvokationAutoToy
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.timerCapture = new System.Windows.Forms.Timer(this.components);
             this.rtbConsole = new System.Windows.Forms.RichTextBox();
             this.chkTopMost = new System.Windows.Forms.CheckBox();
             this.btnSwitch = new System.Windows.Forms.Button();
@@ -44,17 +42,12 @@ namespace GeniusInvokationAutoToy
             this.cboStrategy = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
-            // timerCapture
-            // 
-            this.timerCapture.Tick += new System.EventHandler(this.timerCapture_Tick);
-            // 
             // rtbConsole
             // 
             this.rtbConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rtbConsole.Location = new System.Drawing.Point(9, 93);
-            this.rtbConsole.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rtbConsole.Location = new System.Drawing.Point(14, 140);
             this.rtbConsole.Name = "rtbConsole";
-            this.rtbConsole.Size = new System.Drawing.Size(387, 390);
+            this.rtbConsole.Size = new System.Drawing.Size(578, 583);
             this.rtbConsole.TabIndex = 7;
             this.rtbConsole.Text = "";
             this.rtbConsole.TextChanged += new System.EventHandler(this.rtbConsole_TextChanged);
@@ -62,10 +55,9 @@ namespace GeniusInvokationAutoToy
             // chkTopMost
             // 
             this.chkTopMost.AutoSize = true;
-            this.chkTopMost.Location = new System.Drawing.Point(142, 14);
-            this.chkTopMost.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkTopMost.Location = new System.Drawing.Point(213, 21);
             this.chkTopMost.Name = "chkTopMost";
-            this.chkTopMost.Size = new System.Drawing.Size(72, 16);
+            this.chkTopMost.Size = new System.Drawing.Size(99, 22);
             this.chkTopMost.TabIndex = 9;
             this.chkTopMost.Text = "置顶界面";
             this.chkTopMost.UseVisualStyleBackColor = true;
@@ -73,10 +65,9 @@ namespace GeniusInvokationAutoToy
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Location = new System.Drawing.Point(266, 38);
-            this.btnSwitch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSwitch.Location = new System.Drawing.Point(399, 57);
             this.btnSwitch.Name = "btnSwitch";
-            this.btnSwitch.Size = new System.Drawing.Size(130, 51);
+            this.btnSwitch.Size = new System.Drawing.Size(195, 76);
             this.btnSwitch.TabIndex = 10;
             this.btnSwitch.Text = "开始自动打牌(F11)";
             this.btnSwitch.UseVisualStyleBackColor = true;
@@ -85,9 +76,10 @@ namespace GeniusInvokationAutoToy
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(219, 15);
+            this.linkLabel1.Location = new System.Drawing.Point(328, 22);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(113, 12);
+            this.linkLabel1.Size = new System.Drawing.Size(170, 18);
             this.linkLabel1.TabIndex = 11;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "软件主页(免费开源)";
@@ -97,40 +89,36 @@ namespace GeniusInvokationAutoToy
             // 
             this.lblYSStatus.AutoSize = true;
             this.lblYSStatus.ForeColor = System.Drawing.Color.Red;
-            this.lblYSStatus.Location = new System.Drawing.Point(80, 15);
-            this.lblYSStatus.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblYSStatus.Location = new System.Drawing.Point(120, 22);
             this.lblYSStatus.Name = "lblYSStatus";
-            this.lblYSStatus.Size = new System.Drawing.Size(41, 12);
+            this.lblYSStatus.Size = new System.Drawing.Size(62, 18);
             this.lblYSStatus.TabIndex = 19;
             this.lblYSStatus.Text = "未启动";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 15);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(16, 22);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.Size = new System.Drawing.Size(98, 18);
             this.label1.TabIndex = 18;
             this.label1.Text = "原神状态：";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 43);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(16, 64);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.Size = new System.Drawing.Size(98, 18);
             this.label2.TabIndex = 22;
             this.label2.Text = "卡牌策略：";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 71);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label3.Location = new System.Drawing.Point(16, 106);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(77, 12);
+            this.label3.Size = new System.Drawing.Size(116, 18);
             this.label3.TabIndex = 23;
             this.label3.Text = "游戏分辨率：";
             // 
@@ -141,10 +129,9 @@ namespace GeniusInvokationAutoToy
             this.cboGameResolution.FormattingEnabled = true;
             this.cboGameResolution.Items.AddRange(new object[] {
             "1920x1080"});
-            this.cboGameResolution.Location = new System.Drawing.Point(99, 69);
-            this.cboGameResolution.Margin = new System.Windows.Forms.Padding(2);
+            this.cboGameResolution.Location = new System.Drawing.Point(148, 104);
             this.cboGameResolution.Name = "cboGameResolution";
-            this.cboGameResolution.Size = new System.Drawing.Size(149, 20);
+            this.cboGameResolution.Size = new System.Drawing.Size(222, 26);
             this.cboGameResolution.TabIndex = 21;
             // 
             // cboStrategy
@@ -154,17 +141,16 @@ namespace GeniusInvokationAutoToy
             this.cboStrategy.Items.AddRange(new object[] {
             "莫娜砂糖琴",
             "刻晴雷电将军甘雨"});
-            this.cboStrategy.Location = new System.Drawing.Point(99, 41);
-            this.cboStrategy.Margin = new System.Windows.Forms.Padding(2);
+            this.cboStrategy.Location = new System.Drawing.Point(148, 62);
             this.cboStrategy.Name = "cboStrategy";
-            this.cboStrategy.Size = new System.Drawing.Size(149, 20);
+            this.cboStrategy.Size = new System.Drawing.Size(222, 26);
             this.cboStrategy.TabIndex = 20;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 494);
+            this.ClientSize = new System.Drawing.Size(610, 741);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.cboGameResolution);
@@ -176,7 +162,6 @@ namespace GeniusInvokationAutoToy
             this.Controls.Add(this.chkTopMost);
             this.Controls.Add(this.rtbConsole);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormMain";
             this.Text = "原神自动打牌（自动七胜召唤对局）";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
@@ -187,7 +172,6 @@ namespace GeniusInvokationAutoToy
         }
 
         #endregion
-        private System.Windows.Forms.Timer timerCapture;
         private System.Windows.Forms.RichTextBox rtbConsole;
         private System.Windows.Forms.CheckBox chkTopMost;
         private System.Windows.Forms.Button btnSwitch;

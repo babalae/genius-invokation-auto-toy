@@ -1,12 +1,17 @@
 ﻿using GeniusInvokationAutoToy.Core;
 using GeniusInvokationAutoToy.Forms.Hotkey;
 using GeniusInvokationAutoToy.Strategy;
+using GeniusInvokationAutoToy.Strategy.Model;
+using GeniusInvokationAutoToy.Strategy.Script;
 using GeniusInvokationAutoToy.Utils;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -17,8 +22,6 @@ namespace GeniusInvokationAutoToy
         private static NLog.Logger logger;
 
         private YuanShenWindow window = new YuanShenWindow();
-
-        private BaseStrategy strategy;
 
         private bool isAutoPlaying = false;
 
@@ -56,11 +59,6 @@ namespace GeniusInvokationAutoToy
             GAHelper.Instance.RequestPageView($"七圣召唤自动打牌_{thisVersion}", $"进入七圣召唤自动打牌{thisVersion}版本主界面");
 
 
-            cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
-            cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
-            chkTopMost.Checked = Properties.Settings.Default.TopMostChecked;
-
-
             rtbConsole.Text = @"软件在Github上开源且免费 by huiyadanli
 
 支持角色邀请、每周来客挑战、大世界NPC挑战（部分场景不支持、或者打不过/拿不满奖励）。
@@ -71,7 +69,20 @@ namespace GeniusInvokationAutoToy
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键F11）。
 ";
 
+            LoadCustomScript();
             YSStatus();
+
+            cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
+            if (cboGameResolution.Items.Count <= Properties.Settings.Default.CboGameResolutionSelectIndex)
+            {
+                cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
+            }
+            else
+            {
+                cboGameResolution.SelectedIndex = 0;
+            }
+
+            chkTopMost.Checked = Properties.Settings.Default.TopMostChecked;
 
             try
             {
@@ -88,9 +99,6 @@ namespace GeniusInvokationAutoToy
             //target.TargetRichTextBox = rtbConsole;
             //target.UseDefaultRowColoringRules = true;
             //NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(target, NLog.LogLevel.Trace);
-
-
-
         }
 
         private bool YSStatus()
@@ -109,11 +117,19 @@ namespace GeniusInvokationAutoToy
             }
         }
 
-        private void timerCapture_Tick(object sender, EventArgs e)
+        private void LoadCustomScript()
         {
-            //Bitmap pic = capture.Capture();
-            //pictureBox1.Image = ImageRecognition.GetRect(pic, out rects, chkDisplayDetectForm.Checked);
-            strategy.GetCharacterRects();
+            string[] files = Directory.GetFiles(Path.Combine(Application.StartupPath, "strategy"), "*.*",
+                SearchOption.AllDirectories);
+
+            foreach (string file in files)
+            {
+                if (file.EndsWith(".txt"))
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    cboStrategy.Items.Add(fileName);
+                }
+            }
         }
 
         private async void StartGame()
@@ -121,24 +137,37 @@ namespace GeniusInvokationAutoToy
             if (!window.FindYSHandle())
             {
                 MyLogger.Warn("未找到原神进程，请先启动原神！");
+                return;
             }
 
             window.Focus();
 
             rtbConsole.Text = ""; // 清空日志
 
+            cts = new CancellationTokenSource();
+            ;
+            BaseStrategy strategy;
             if (cboStrategy.SelectedIndex == 0)
             {
                 strategy = new MonaSucroseJeanStrategy(window);
+                await strategy.RunAsync(cts);
+            }
+            else if (cboStrategy.SelectedIndex == 1)
+            {
+                strategy = new KeqingRaidenGanyuStrategy(window);
+                await strategy.RunAsync(cts);
             }
             else
             {
-                strategy = new KeqingRaidenGanyuStrategy(window);
+                Duel duel = ScriptParser.Parse(File.ReadAllText(Path.Combine(Application.StartupPath, "strategy",
+                    cboStrategy.Text + ".txt"), Encoding.UTF8));
+                if (duel == null)
+                {
+                    throw new Exception("策略解析失败");
+                }
+
+                await duel.CustomStrategyRunAsync(cts);
             }
-
-            cts = new CancellationTokenSource(); ;
-            await strategy.RunAsync(cts);
-
         }
 
         private void StopGame()
@@ -222,6 +251,5 @@ namespace GeniusInvokationAutoToy
         }
 
         #endregion
-
     }
 }

@@ -8,6 +8,7 @@ using GeniusInvokationAutoToy.Core.Model;
 using OpenCvSharp;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using GeniusInvokationAutoToy.Utils;
 
 namespace GeniusInvokationAutoToy.Strategy.Script
 {
@@ -28,42 +29,93 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                 result.Add(l);
             }
 
-            return null;
+            return Parse(result);
         }
 
         public static Duel Parse(List<string> lines)
         {
             Duel duel = new Duel();
             string stage = "";
-            for (int i = 0; i < lines.Count; i++)
+
+            int i = 0;
+            try
             {
-                var line = lines[i];
-                if (line.Contains(":"))
+                for (i = 0; i < lines.Count; i++)
                 {
-                    stage = line;
-                    continue;
+                    var line = lines[i];
+                    if (line.Contains(":"))
+                    {
+                        stage = line;
+                        if (stage.StartsWith("回合"))
+                        {
+                            duel.RoundStrategies.Add(new RoundStrategy());
+                        }
+
+                        continue;
+                    }
+
+                    if (line == "---")
+                    {
+                        continue;
+                    }
+
+                    if (stage == "角色定义:")
+                    {
+                        var character = ParseCharacter(line);
+                        duel.Characters[character.Index] = character;
+                    }
+                    else if (stage.StartsWith("回合"))
+                    {
+                        Trace.Assert(duel.Characters[3] != null, "角色未定义");
+
+                        int roundNum = int.Parse(Regex.Replace(stage, @"[^0-9]+", ""));
+                        Trace.Assert(roundNum <= 30, "你的回合数也太多了(>30)");
+
+                        string[] actionParts = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                        Trace.Assert(actionParts.Length == 2, "回合中的命令解析错误");
+
+                        var actionCommand = new ActionCommand();
+                        var action = actionParts[0].ChineseToActionEnum();
+                        actionCommand.Action = action;
+                        if (action == ActionEnum.ChooseFirst || action == ActionEnum.SwitchLater)
+                        {
+                            foreach (var character in duel.Characters)
+                            {
+                                if (character!= null && character.Name == actionParts[1])
+                                {
+                                    actionCommand.TargetIndex = character.Index;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (action == ActionEnum.UseSkill)
+                        {
+                            int skillNum = int.Parse(Regex.Replace(actionParts[1], @"[^0-9]+", ""));
+                            Trace.Assert(skillNum < 5, "技能编号错误");
+                            actionCommand.TargetIndex = skillNum;
+                        }
+                        else
+                        {
+                            throw new Exception($"未知的动作：{action}");
+                        }
+
+                        duel.RoundStrategies[roundNum - 1].ActionCommands.Add(actionCommand);
+                        duel.RoundStrategies[roundNum - 1].RawCommandList.Add(line);
+                    }
+                    else
+                    {
+                        throw new Exception($"未知的定义字段：{stage}");
+                    }
                 }
 
-                if (line == "---")
-                {
-                    continue;
-                }
-
-                if (stage == "角色定义:")
-                {
-                    var character = ParseCharacter(line);
-                    duel.Characters[character.Index] = character;
-                }
-                else if (stage.StartsWith("回合"))
-                {
-                    int roundNum = int.Parse(Regex.Replace(stage, @"[^0-9]+", ""));
-                    Trace.Assert(roundNum > 30, "你的回合数也太多了(>30)");
-                    duel.RoundStrategies[roundNum - 1].CommandList.Add(line);
-                }
-                else
-                {
-                    throw new Exception($"未知的定义字段：{stage}");
-                }
+                Trace.Assert(duel.Characters[3] != null, "角色未定义，请确认策略文本格式是否为UTF-8");
+                Trace.Assert(duel.RoundStrategies[0].ActionCommands[0].Action == ActionEnum.ChooseFirst,
+                    "回合1的首个指令必须是出战角色");
+            }
+            catch (Exception ex)
+            {
+                MyLogger.Error($"解析脚本错误，行号：{i + 1}，错误信息：{ex}");
+                return null;
             }
 
             return duel;
@@ -80,21 +132,24 @@ namespace GeniusInvokationAutoToy.Strategy.Script
         public static Character ParseCharacter(string line)
         {
             var character = new Character();
-            var parts = line.Split('=');
-            character.Index = short.Parse(Regex.Replace(parts[0], @"[^0-9]+", ""));
+
+            var characterAndSkill = line.Split('{');
+
+            var parts = characterAndSkill[0].Split('=');
+            character.Index = int.Parse(Regex.Replace(parts[0], @"[^0-9]+", ""));
             Trace.Assert(character.Index >= 1 && character.Index <= 3, "角色序号必须在1-3之间");
             var nameAndElement = parts[1].Split('|');
             character.Name = nameAndElement[0];
             character.Element = nameAndElement[1].Substring(0, 1).ChineseToElementalType();
 
             // 技能
-            string skillStr = nameAndElement[1].Substring(1).Replace("{", "").Replace("}", "");
+            string skillStr = characterAndSkill[1].Replace("}", "");
             var skillParts = skillStr.Split(',');
-            var skills = new List<Skill>();
+            var skills = new Skill[skillParts.Length + 1];
             for (int i = 0; i < skillParts.Length; i++)
             {
                 var skill = ParseSkill(skillParts[i]);
-                skills.Add(skill);
+                skills[skill.Index] = skill;
             }
 
             character.Skills = skills.ToArray();

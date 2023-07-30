@@ -9,6 +9,9 @@ namespace GeniusInvokationAutoToy.Strategy.Model
 {
     public class Skill
     {
+        /// <summary>
+        /// 1-4 和数组下标一致，游戏中是从右往左开始数的！
+        /// </summary>
         public short Index { get; set; }
         public ElementalType Type { get; set; }
         /// <summary>
