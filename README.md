@@ -48,6 +48,11 @@ PC原神七圣召唤PVE全自动打牌。
 * 会不会封号？
   * 只能说理论上不会被封，但是mhy是自由的，用户条款上明确说明模拟操作是封号理由之一。当前使用了 mouse_event 模拟鼠标点击，还是存在被检测的可能。只能说请低调使用，请不要跳脸官方。
 
+## 自定义自动打牌策略
+
+1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式注意容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不能在对局中死亡
+2. 会编程的用户：可以 Fork 本项目添加新的策略后发起PR，参考 [MonaSucroseJeanStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/MonaSucroseJeanStrategy.cs) 、[KeqingRaidenGanyuStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/KeqingRaidenGanyuStrategy.cs) 继承 [BaseStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/BaseStrategy.cs) 后实现自己的打牌策略，只需进行各种情况的逻辑判断以及传参即可。
+
 ## 问题反馈
 
 提 [Issue](https://github.com/babalae/genius-invokation-auto-toy/issues) 或 QQ群[894935931](https://qm.qq.com/cgi-bin/qm/qr?k=u9Ij0HrDVQhvcoFvaiQGv38V3R7ZNY6K&jump_from=webapi&authKey=N++f74HhGHDzFje1dDD6E8vzuf45jmSFaPiVbc3Z7x/nTUWGwZ3UdSPqYQqPfOXK)
