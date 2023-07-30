@@ -4,7 +4,7 @@
 
 PC原神七圣召唤PVE全自动打牌。
 
-[📺视频演示](https://www.bilibili.com/video/BV13h4y1L7PH)
+<del>[📺视频演示](https://www.bilibili.com/video/BV13h4y1L7PH)</del>
 
 当前只完整支持无缩放 1920x1080 的窗口化游戏，其它分辨率很有可能会没法正常识别
 
@@ -13,6 +13,11 @@ PC原神七圣召唤PVE全自动打牌。
 部分场景不支持、或者打不过、拿不满奖励。暂时不支持角色被超载、冻结的情况。
 
 其他分辨率、语言想要支持也简单的，只要在对应分辨率下截取一些图片替换软件目录下的文件即可。
+
+## 截图
+
+![image](https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/937cdac8-d65f-4fed-a2fb-9a00ad3fb88f)
+
 
 ## 下载地址
 
@@ -42,16 +47,17 @@ PC原神七圣召唤PVE全自动打牌。
 
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键<kbd>F11</kbd>）。
 
+## 自定义自动打牌策略
+
+1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不会在对局中死亡，推荐针对某些固定行动的对局进行编写。
+2. 会编程的用户：可以 Fork 本项目添加新的策略后发起PR，参考 [MonaSucroseJeanStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/MonaSucroseJeanStrategy.cs) 、[KeqingRaidenGanyuStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/KeqingRaidenGanyuStrategy.cs) 继承 [BaseStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/BaseStrategy.cs) 后实现自己的打牌策略，只需进行各种情况的逻辑判断以及传参即可。
+
+
 ## FAQ
 * 为什么需要管理员权限？
   * 因为游戏以管理员权限启动，软件不以管理员权限启动的话没法模拟鼠标点击。
 * 会不会封号？
   * 只能说理论上不会被封，但是mhy是自由的，用户条款上明确说明模拟操作是封号理由之一。当前使用了 mouse_event 模拟鼠标点击，还是存在被检测的可能。只能说请低调使用，请不要跳脸官方。
-
-## 自定义自动打牌策略
-
-1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不会在对局中死亡，推荐针对某些固定行动的对局进行编写。
-2. 会编程的用户：可以 Fork 本项目添加新的策略后发起PR，参考 [MonaSucroseJeanStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/MonaSucroseJeanStrategy.cs) 、[KeqingRaidenGanyuStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/KeqingRaidenGanyuStrategy.cs) 继承 [BaseStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/BaseStrategy.cs) 后实现自己的打牌策略，只需进行各种情况的逻辑判断以及传参即可。
 
 ## 问题反馈
 
