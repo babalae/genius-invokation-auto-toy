@@ -50,7 +50,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 自定义自动打牌策略
 
-1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式注意容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不能在对局中死亡
+1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不会在对局中死亡，推荐针对某些固定行动的对局进行编写。
 2. 会编程的用户：可以 Fork 本项目添加新的策略后发起PR，参考 [MonaSucroseJeanStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/MonaSucroseJeanStrategy.cs) 、[KeqingRaidenGanyuStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/KeqingRaidenGanyuStrategy.cs) 继承 [BaseStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/BaseStrategy.cs) 后实现自己的打牌策略，只需进行各种情况的逻辑判断以及传参即可。
 
 ## 问题反馈
