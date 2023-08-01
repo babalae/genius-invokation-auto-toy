@@ -21,17 +21,20 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 下载地址
 
-[📥Github下载（1.1）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.1/GeniusInvokationAutoToy.v1.1.zip)
+[📥Github下载（1.2）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.2/GeniusInvokationAutoToy.v1.2.zip)
 
 [📥蓝奏云下载](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
 
 
 ## 使用方法
 
+由于图像识别比较吃性能，低配置电脑可能无法正常使用。
+
 你的系统需要满足以下条件：
   * Windows 7 或更高版本
   * 系统是64位（都已经2023年了，总没有还在用32位系统的人了吧）
   * [.NET Framework 4.7.2](https://support.microsoft.com/zh-cn/topic/%E9%80%82%E7%94%A8%E4%BA%8E-windows-%E7%9A%84-microsoft-net-framework-4-7-2-%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-05a72734-2127-a15d-50cf-daf56d5faec2) 或更高版本。**低于此版本在打开程序时可能无反应，或者直接报错**。
+
 
 
 1、首先你的牌组必须是 **【莫娜、砂糖、琴】** 或者 **【刻晴、雷电将军、甘雨】** （其他牌组可以参考下面的“自定义自动打牌策略”），顺序不能变，带什么牌无所谓。（[颠勺牌组玩法来源](https://www.bilibili.com/video/BV1ZP41197Ws)，雷神牌组来源NGA）
