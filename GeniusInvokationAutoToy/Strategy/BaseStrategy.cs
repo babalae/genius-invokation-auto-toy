@@ -806,6 +806,8 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 判断对方行动是否已经结束
             int retryCount = 0;
+            int inOpponentActionCount = 0;
+            int inMyActionCount = 0;
             while (true)
             {
                 if (IsInMyAction())
@@ -819,11 +821,35 @@ namespace GeniusInvokationAutoToy.Strategy
                         SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
                         ClickGameWindowCenter();
                         Sleep(2000); // 切人动画
+                        inOpponentActionCount = 0;
                     }
                     else
                     {
-                        break;
+                        inMyActionCount++;
+                        // 至少存在一次在对方行动中
+                        if (inOpponentActionCount > 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if (inMyActionCount <= 3)
+                            {
+                                MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
+                                continue;
+                            }
+                            else
+                            {
+                                MyLogger.Info("认定当前在我方回合,继续操作");
+                                break;
+                            }
+                        }
+                        
                     }
+                }
+                else if (IsInOpponentAction())
+                {
+                    inOpponentActionCount++;
                 }
                 else if (IsDuelEnd())
                 {

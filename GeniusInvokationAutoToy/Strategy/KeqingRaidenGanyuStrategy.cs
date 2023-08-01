@@ -192,7 +192,7 @@ namespace GeniusInvokationAutoToy.Strategy
             GanyuEnergyNum += 2;
 
             // 等待对方行动完成
-            WaitForMyTurn(10000);
+            WaitForMyTurn(15000);
 
             MyLogger.Info("回合2 行动2 切换甘雨");
             SwitchCharacterLater(3);
@@ -245,8 +245,8 @@ namespace GeniusInvokationAutoToy.Strategy
             }
             GanyuEnergyNum =0;
 
-            // 等待对方行动完成
-            WaitForMyTurn(10000);
+            // 等待对方行动完成 // 甘雨大招动画比较长
+            WaitForMyTurn(15000);
 
             MyLogger.Info("回合3 行动2 切换刻晴");
             SwitchCharacterLater(1);
