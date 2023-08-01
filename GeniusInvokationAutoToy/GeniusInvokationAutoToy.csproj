@@ -130,7 +130,9 @@
     <Compile Include="Strategy\Model\ActionCommand.cs" />
     <Compile Include="Strategy\Model\ActionEnum.cs" />
     <Compile Include="Strategy\Model\Character.cs" />
+    <Compile Include="Strategy\Model\CharacterStatusEnum.cs" />
     <Compile Include="Strategy\Model\Duel.cs" />
+    <Compile Include="Strategy\Model\Old\CurrentCharacterStatus.cs" />
     <Compile Include="Strategy\Model\RoundStrategy.cs" />
     <Compile Include="Strategy\Model\Skill.cs" />
     <Compile Include="Strategy\MonaSucroseJeanStrategy.cs" />

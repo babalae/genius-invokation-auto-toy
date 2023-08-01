@@ -12,20 +12,27 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GeniusInvokationAutoToy.Core.MyException;
+using GeniusInvokationAutoToy.Strategy.Model;
 using NLog.LayoutRenderers;
 using Point = System.Drawing.Point;
+using GeniusInvokationAutoToy.Strategy.Model.Old;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
-
     public abstract class BaseStrategy
     {
+        public static bool OutputImageWhenError = true;
+
         protected ImageCapture capture = new ImageCapture();
         protected YuanShenWindow window;
         protected Rectangle windowRect;
 
         protected int CurrentCardCount { get; set; }
         protected int CurrentTakenOutCharacterCount { get; set; }
+        protected int CurrentActiveCharacterArrayIndex { get; set; }
+        protected CurrentCharacterStatus CurrentCharacterStatus;
+        protected int CurrentDiceCount = 0;
+
 
         protected CancellationTokenSource cts;
 
@@ -173,7 +180,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     if (y1 == 0)
                     {
                         y1 = start;
-                        if (ImageRecognition.IsDebug)
+                        if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
                             Cv2.Line(srcMat, 0, y1, srcMat.Width, y1, Scalar.Red);
                         }
@@ -181,7 +188,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     else if (y2 == 0)
                     {
                         y2 = i;
-                        if (ImageRecognition.IsDebug)
+                        if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
                             Cv2.Line(srcMat, 0, y2, srcMat.Width, y2, Scalar.Red);
                         }
@@ -199,6 +206,11 @@ namespace GeniusInvokationAutoToy.Strategy
                     Cv2.ImShow("识别窗口", srcMat);
                 }
 
+                if (OutputImageWhenError)
+                {
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
+                }
+
                 return null;
             }
 
@@ -208,6 +220,11 @@ namespace GeniusInvokationAutoToy.Strategy
                 if (ImageRecognition.IsDebug)
                 {
                     Cv2.ImShow("识别窗口", srcMat);
+                }
+
+                if (OutputImageWhenError)
+                {
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
 
                 return null;
@@ -226,7 +243,7 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 if (v[i] > h.Average() * 10)
                 {
-                    if (ImageRecognition.IsDebug)
+                    if (ImageRecognition.IsDebug || OutputImageWhenError)
                     {
                         Cv2.Line(srcMat, i, 0, i, v[i], Scalar.Yellow);
                     }
@@ -242,7 +259,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     //由连续区域进入空白区域了
                     inLine = false;
-                    if (ImageRecognition.IsDebug)
+                    if (ImageRecognition.IsDebug || OutputImageWhenError)
                     {
                         Cv2.Line(srcMat, start, 0, start, srcMat.Height, Scalar.Red);
                     }
@@ -257,6 +274,11 @@ namespace GeniusInvokationAutoToy.Strategy
                 if (ImageRecognition.IsDebug)
                 {
                     Cv2.ImShow("识别窗口", srcMat);
+                }
+
+                if (OutputImageWhenError)
+                {
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
 
                 return null;
@@ -654,7 +676,8 @@ namespace GeniusInvokationAutoToy.Strategy
                     return false;
                 }
 
-                MyLogger.Info("当前需要的元素骰子数量不足{}个，还缺{}个，当前手牌数{}，烧牌", diceCost, needSpecifyElementDiceCount, CurrentCardCount);
+                MyLogger.Info("当前需要的元素骰子数量不足{}个，还缺{}个，当前手牌数{}，烧牌", diceCost, needSpecifyElementDiceCount,
+                    CurrentCardCount);
 
                 for (int i = 0; i < needSpecifyElementDiceCount; i++)
                 {
@@ -765,6 +788,64 @@ namespace GeniusInvokationAutoToy.Strategy
         }
 
         /// <summary>
+        /// 出战角色是否被打倒2
+        /// </summary>
+        /// <returns>true 是已经被打倒</returns>
+        public bool[] WhatCharacterDefeated()
+        {
+            if (MyCharacterRects == null || MyCharacterRects.Count != 3)
+            {
+                throw new Exception("未能获取到我方角色卡位置");
+            }
+
+            Mat resMat;
+            List<Point> pList = ImageRecognition.FindMultiTarget(Capture().ToMat(),
+                ImageResCollections.CharacterDefeatedBitmap.ToMat(), "defeated", out resMat);
+
+            bool[] res = new bool[3];
+            foreach (var p in pList)
+            {
+                if (!p.IsEmpty)
+                {
+                    for (int i = 0; i < MyCharacterRects.Count; i++)
+                    {
+                        if (isOverlap(MyCharacterRects[i],
+                                new Rectangle(p.X, p.Y, ImageResCollections.CharacterDefeatedBitmap.Width,
+                                    ImageResCollections.CharacterDefeatedBitmap.Height)))
+                        {
+                            res[i] = true;
+                        }
+                    }
+                }
+            }
+
+
+            return res;
+        }
+
+        /// <summary>
+        /// 判断矩形是否重叠
+        /// </summary>
+        /// <param name="rc1"></param>
+        /// <param name="rc2"></param>
+        /// <returns></returns>
+        public bool isOverlap(Rectangle rc1, Rectangle rc2)
+        {
+            if (rc1.X + rc1.Width > rc2.X &&
+                rc2.X + rc2.Width > rc1.X &&
+                rc1.Y + rc1.Height > rc2.Y &&
+                rc2.Y + rc2.Height > rc1.Y
+               )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// 是否对局完全结束
         /// </summary>
         /// <returns></returns>
@@ -815,10 +896,29 @@ namespace GeniusInvokationAutoToy.Strategy
                     if (IsActiveCharacterTakenOut())
                     {
                         CurrentTakenOutCharacterCount++;
-                        MyLogger.Info("我方角色已阵亡，选择新的出战角色");
-                        SwitchCharacterWhenTakenOut(3);
-                        SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
-                        SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
+                        bool[] defeatedArray = WhatCharacterDefeated();
+
+                        int i;
+                        for (i = defeatedArray.Length - 1; i >= 0; i--)
+                        {
+                            if (!defeatedArray[i])
+                            {
+                                MyLogger.Info($"我方角色已阵亡，选择新的出战角色{i + 1}");
+                                SwitchCharacterWhenTakenOut(i + 1);
+                                CurrentActiveCharacterArrayIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (i == -1)
+                        {
+                            MyLogger.Error("我方角色已阵亡，但是无法确定是哪个角色，使用备用方案");
+                            SwitchCharacterWhenTakenOut(3);
+                            SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
+                            SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
+                            CurrentActiveCharacterArrayIndex = -1;
+                        }
+
                         ClickGameWindowCenter();
                         Sleep(2000); // 切人动画
                         inOpponentActionCount = 0;
@@ -833,17 +933,16 @@ namespace GeniusInvokationAutoToy.Strategy
                         }
                         else
                         {
-                            if (inMyActionCount <= 3)
+                            if (inMyActionCount < 3)
                             {
-                                MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
+                                //MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
                             }
                             else
                             {
-                                MyLogger.Info("认定当前在我方回合,继续操作");
+                                //MyLogger.Info("认定当前在我方回合,继续操作");
                                 break;
                             }
                         }
-                        
                     }
                 }
                 else if (IsInOpponentAction())
@@ -926,6 +1025,114 @@ namespace GeniusInvokationAutoToy.Strategy
 
                 Sleep(1000 + rd.Next(1, 500));
             }
+        }
+
+        /// <summary>
+        /// 哪个角色处于出战状态
+        /// </summary>
+        /// <returns></returns>
+        public CurrentCharacterStatus WhichCharacterActive()
+        {
+            if (MyCharacterRects == null || MyCharacterRects.Count != 3)
+            {
+                throw new Exception("未能获取到我方角色卡位置");
+            }
+            Mat srcMat = Capture().ToMat();
+
+            // 切割下半部分
+            int halfHeight = srcMat.Height / 2;
+            Mat bottomMat = new Mat(srcMat, new Rect(0, halfHeight, srcMat.Width, srcMat.Height - halfHeight));
+            Mat resMat;
+            List<Point> pList = ImageRecognition.FindMultiTarget(bottomMat,
+                ImageResCollections.CharacterHpUpperBitmap.ToMat(), "HpUpper", out resMat, 0.7);
+            if (pList.Count != 3)
+            {
+                if (OutputImageWhenError)
+                {
+                    var outMat = srcMat.Clone();
+                    foreach (var point in pList)
+                    {
+                        Cv2.Rectangle(outMat,
+                            new Rect(point.X, point.Y + halfHeight, ImageResCollections.CharacterHpUpperBitmap.Width,
+                                ImageResCollections.CharacterHpUpperBitmap.Height), Scalar.Red, 2);
+                    }
+
+                    Cv2.ImWrite("logs\\active_character_error.jpg", outMat);
+                }
+
+                throw new RetryException("角色Hp区块未识别到");
+            }
+
+            // 按照X轴升序
+            pList = pList.OrderBy(point => point.X).ToList();
+
+            // 获取出战角色序号
+            var currentCharacterStatus = new CurrentCharacterStatus();
+            int cnt = 0;
+            for (int i = 0; i < pList.Count; i++)
+            {
+                if (halfHeight + pList[i].Y < MyCharacterRects[i].Y)
+                {
+                    cnt++;
+                    currentCharacterStatus.ArrayIndex = i;
+                    CurrentActiveCharacterArrayIndex = i;
+                }
+            }
+
+            if (cnt != 1)
+            {
+                if (OutputImageWhenError)
+                {
+                    var outMat = srcMat.Clone();
+                    foreach (var point in pList)
+                    {
+                        Cv2.Rectangle(outMat,
+                            new Rect(point.X, point.Y + halfHeight, ImageResCollections.CharacterHpUpperBitmap.Width,
+                                ImageResCollections.CharacterHpUpperBitmap.Height), Scalar.Red, 2);
+                    }
+                    foreach (var rc in MyCharacterRects)
+                    {
+                        Cv2.Rectangle(outMat,
+                            rc.ToCvRect(), Scalar.Green, 2);
+                    }
+                    Cv2.ImWrite("logs\\active_character_error.jpg", outMat);
+                }
+                throw new RetryException($"识别到{cnt}个出战角色");
+            }
+
+            // 截取出战角色区域扩展
+            Mat characterMat = new Mat(srcMat, new Rect(pList[currentCharacterStatus.ArrayIndex].X,
+                pList[currentCharacterStatus.ArrayIndex].Y,
+                MyCharacterRects[currentCharacterStatus.ArrayIndex].Width + 40,
+                MyCharacterRects[currentCharacterStatus.ArrayIndex].Height +
+                MyCharacterRects[currentCharacterStatus.ArrayIndex].Y - pList[currentCharacterStatus.ArrayIndex].Y));
+            // 识别角色异常状态
+            Point pCharacterStatusFreeze = ImageRecognition.FindSingleTarget(characterMat.Clone(),
+                ImageResCollections.CharacterStatusFreezeBitmap.ToMat(), 0.7);
+            if (!pCharacterStatusFreeze.IsEmpty)
+            {
+                currentCharacterStatus.NegativeStatusList.Add(CharacterStatusEnum.Frozen);
+            }
+
+            Point pCharacterStatusDizziness = ImageRecognition.FindSingleTarget(characterMat.Clone(),
+                ImageResCollections.CharacterStatusDizzinessBitmap.ToMat(), 0.7);
+            if (!pCharacterStatusDizziness.IsEmpty)
+            {
+                currentCharacterStatus.NegativeStatusList.Add(CharacterStatusEnum.Dizziness);
+            }
+
+            // 识别角色能量
+            List<Point> energyPointList = ImageRecognition.FindMultiTarget(characterMat.Clone(),
+                ImageResCollections.CharacterEnergyOnBitmap.ToMat(), "e", out resMat);
+            currentCharacterStatus.EnergyNum = energyPointList.Count;
+
+            MyLogger.Info(currentCharacterStatus.ToString());
+            return currentCharacterStatus;
+        }
+
+        public CurrentCharacterStatus WhichCharacterActiveWithRetry()
+        {
+            return Retry.Do(WhichCharacterActive, TimeSpan.FromSeconds(0.5), 8);
         }
     }
 }

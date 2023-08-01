@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using GeniusInvokationAutoToy.Core;
 using GeniusInvokationAutoToy.Core.Model;
 using GeniusInvokationAutoToy.Core.MyException;
+using GeniusInvokationAutoToy.Strategy.Model.Old;
 using GeniusInvokationAutoToy.Utils;
 using GeniusInvokationAutoToy.Utils.Extension;
 using NLog;
@@ -24,6 +25,14 @@ namespace GeniusInvokationAutoToy.Strategy
         /// 莫娜充能
         /// </summary>
         protected int MonaEnergyNum;
+        /// <summary>
+        /// 砂糖充能
+        /// </summary>
+        protected int SucroseEnergyNum;
+        /// <summary>
+        /// 琴充能
+        /// </summary>
+        protected int JeanEnergyNum;
 
         public MonaSucroseJeanStrategy(YuanShenWindow window) : base(window)
         {
@@ -122,10 +131,11 @@ namespace GeniusInvokationAutoToy.Strategy
         }
 
         /// <summary>
-        /// 第一回合
+        /// 第一回合 要尽量保证行动
         /// </summary>
         public void Round1()
         {
+            CurrentDiceCount = 8;
             // 0 投骰子
             ReRollDice(ElementalType.Anemo, ElementalType.Hydro, ElementalType.Omni);
 
@@ -134,32 +144,46 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 1 回合1 行动1 莫娜使用1次二技能
             MyLogger.Info("回合1 行动1 莫娜使用1次二技能");
-            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, 8);
+            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Warn("没有足够的手牌或元素骰子释放技能，停止自动打牌");
                 return;
             }
-
+            CurrentDiceCount-=3;
             MonaEnergyNum++;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
-            // 2 回合1 行动2 切换砂糖
-            MyLogger.Info("回合1 行动2 切换砂糖");
-            SwitchCharacterLater(2);
+            CurrentCharacterStatus = WhichCharacterActiveWithRetry();
 
-            // 快速切换无需等待对方 但是有动画，需要延迟一会
-            WaitForMyTurn(3000);
+            if (CurrentCharacterStatus.ArrayIndex != 1)
+            {
+                // 2 回合1 行动2 切换砂糖
+                MyLogger.Info("回合1 行动2 切换砂糖");
+                SwitchCharacterLater(2);
+                CurrentDiceCount--;
+
+                // 快速切换无需等待对方 但是有动画，需要延迟一会
+                WaitForMyTurn(3000);
+            }
+            else
+            {
+                MyLogger.Warn("回合1 行动2 砂糖已经被切换，无需快速切换");
+            }
+
 
             // 3 回合1 行动2 砂糖使用1次二技能
             MyLogger.Info("回合1 行动3 砂糖使用1次二技能");
-            ActionPhaseAutoUseSkill(2, 3, ElementalType.Anemo, 4);
-
+            ActionPhaseAutoUseSkill(2, 3, ElementalType.Anemo, CurrentDiceCount);
+            SucroseEnergyNum++;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
+
+            // 砂糖有可能被超载切走
+            HoldSwitchCharacter(2);
 
             // 4 回合1 结束 剩下1个骰子
             MyLogger.Info("我方点击回合结束");
@@ -171,44 +195,50 @@ namespace GeniusInvokationAutoToy.Strategy
 
 
         /// <summary>
-        /// 第二回合
+        /// 第二回合 要尽量保证行动
         /// </summary>
         public void Round2()
         {
             CurrentCardCount += 2;
+            CurrentDiceCount = 8;
             // 0 投骰子
             ReRollDice(ElementalType.Anemo, ElementalType.Omni);
 
             // 等待对方行动完成 // 可能是对方先手
             WaitForMyTurn(1000);
 
+            HoldSwitchCharacter(2);
             // 1 回合2 行动1 砂糖使用1次二技能
-            MyLogger.Info("回合2 行动1 砂糖使用1次二技能");
-            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Anemo, 8);
+            MyLogger.Info("回合2 砂糖使用1次二技能");
+            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Anemo, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
             }
+            CurrentDiceCount -= 3;
+            SucroseEnergyNum++;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
+            HoldSwitchCharacter(2);
             // 2 回合2 行动2 砂糖充能已满，使用1次三技能
-            MyLogger.Info("回合2 行动2 砂糖充能已满，使用1次三技能");
-            useSkillRes = ActionPhaseAutoUseSkill(1, 3, ElementalType.Anemo, 5);
+            MyLogger.Info("回合2 砂糖充能已满，使用1次三技能");
+            useSkillRes = ActionPhaseAutoUseSkill(1, 3, ElementalType.Anemo, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
             }
+            CurrentDiceCount -= 3;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
-            // 4 回合2 结束 剩下2个骰子
+            // 4 回合2 结束
             MyLogger.Info("我方点击回合结束");
             RoundEnd();
 
@@ -224,6 +254,7 @@ namespace GeniusInvokationAutoToy.Strategy
         public void RoundMore()
         {
             CurrentCardCount += 2;
+            CurrentDiceCount = 8;
             // 0 投骰子
             ReRollDice(ElementalType.Anemo, ElementalType.Omni);
 
@@ -238,6 +269,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
             }
+            CurrentDiceCount -= 3;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
@@ -250,6 +282,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
             }
+            CurrentDiceCount -= 3;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
@@ -344,6 +377,31 @@ namespace GeniusInvokationAutoToy.Strategy
             roundDiceCount -= 3;
             MonaEnergyNum = 0;
             return roundDiceCount;
+        }
+
+        public void HoldSwitchCharacter(int index)
+        {
+            // 砂糖有可能被超载切走
+            CurrentCharacterStatus = WhichCharacterActiveWithRetry();
+            if (CurrentCharacterStatus.ArrayIndex != index-1)
+            {
+                // 2 回合1 行动2 切换砂糖
+                MyLogger.Info("回合1 行动4 检测到出战角色不是砂糖，可能被超载，切换回砂糖");
+                SwitchCharacterLater(index); // 刚好还有一个骰子可以用来切人
+                CurrentDiceCount--;
+
+                // 等待对方行动完成
+                WaitForMyTurn(10000);
+            }
+            else
+            {
+                // 冻结、眩晕
+                if (CurrentCharacterStatus.NegativeStatusList.Count > 0)
+                {
+                    MyLogger.Warn("当前出战角色因为负面状态无法行动");
+                    throw new DuelEndException("当前出战角色因为负面状态无法行动，暂时无法支持此种情况，请尝试其他卡组或使用自定卡组的功能");
+                }
+            }
         }
     }
 }

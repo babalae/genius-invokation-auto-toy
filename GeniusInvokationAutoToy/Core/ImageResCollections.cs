@@ -16,6 +16,7 @@ namespace GeniusInvokationAutoToy.Core
     {
 
         public static string RollPhaseDiceBitmapPath = Path.Combine(Application.StartupPath, "config\\1920x1080\\dice");
+        public static string CardBitmapPath = Path.Combine(Application.StartupPath, "config\\1920x1080\\card");
 
         // 投掷期间的骰子
         public static Dictionary<string,Bitmap> RollPhaseDiceBitmaps = new Dictionary<string, Bitmap>()
@@ -53,7 +54,17 @@ namespace GeniusInvokationAutoToy.Core
         public static Bitmap EndPhaseBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\回合结算阶段.png"));
         public static Bitmap ElementalDiceLackWarning = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\元素骰子不足.png"));
         public static Bitmap CharacterTakenOutBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色死亡.png"));
+        public static Bitmap CharacterDefeatedBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色被打败.png"));
         public static Bitmap InCharacterPickBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\出战角色.png"));
 
+        // 角色区域
+        public static Bitmap CharacterHpUpperBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色血量上方.png"));
+        public static Bitmap CharacterStatusFreezeBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色状态_冻结.png"));
+        public static Bitmap CharacterStatusDizzinessBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\角色状态_水泡.png"));
+        public static Bitmap CharacterEnergyOnBitmap = new Bitmap(Path.Combine(Application.StartupPath, "config\\1920x1080\\other_zh-cn\\满能量.png"));
+
+        // 卡牌
+        public static Bitmap ElementalResonanceWovenWindsCard = new Bitmap(Path.Combine(CardBitmapPath, "Elemental Resonance Woven Winds.png"));
+        public static Bitmap TheBestestTravelCompanionCard = new Bitmap(Path.Combine(CardBitmapPath, "The Bestest Travel Companion.png"));
     }
 }
