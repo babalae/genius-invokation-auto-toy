@@ -302,7 +302,7 @@ namespace GeniusInvokationAutoToy.Strategy
         public void RoundMoreForMona()
         {
             bool useSkillRes;
-            int roundDiceCount = 8;
+            CurrentDiceCount = 8;
             CurrentCardCount += 2;
             // 0 投骰子
             ReRollDice(ElementalType.Hydro, ElementalType.Omni);
@@ -312,7 +312,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
             if (MonaEnergyNum == 3)
             {
-                roundDiceCount = MonaUse3Skill(roundDiceCount);
+                CurrentDiceCount = MonaUse3Skill(CurrentDiceCount);
             }
 
             // 1 使用1次二技能
@@ -324,30 +324,30 @@ namespace GeniusInvokationAutoToy.Strategy
                 RoundEnd();
             }
 
-            roundDiceCount -= 3;
+            CurrentDiceCount -= 3;
             MonaEnergyNum++;
 
 
-            if (MonaEnergyNum == 3 && roundDiceCount >= 3)
+            if (MonaEnergyNum == 3 && CurrentDiceCount >= 3)
             {
-                roundDiceCount = MonaUse3Skill(roundDiceCount);
+                CurrentDiceCount = MonaUse3Skill(CurrentDiceCount);
             }
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
             // 2 使用1次一技能
-            if (roundDiceCount >= 3)
+            if (CurrentDiceCount >= 3)
             {
                 MyLogger.Info("行动2 使用1次一技能");
-                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Hydro, roundDiceCount);
+                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Hydro, CurrentDiceCount);
                 if (!useSkillRes)
                 {
                     MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                     RoundEnd();
                 }
 
-                roundDiceCount -= 3;
+                CurrentDiceCount -= 3;
                 MonaEnergyNum++;
             }
 

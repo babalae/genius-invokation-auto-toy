@@ -643,16 +643,34 @@ namespace GeniusInvokationAutoToy.Strategy
         public bool ActionPhaseAutoUseSkill(int skillIndex, int diceCost, ElementalType elementalType,
             int expectDiceCount)
         {
+            int dice9RetryCount = 0;
             int retryCount = 0;
             Dictionary<string, int> diceStatus = ActionPhaseDice();
             while (true)
             {
-                if (diceStatus.Sum(x => x.Value) != expectDiceCount)
+                int dCount = diceStatus.Sum(x => x.Value);
+                if (dCount != expectDiceCount)
                 {
+
                     if (retryCount > 20)
                     {
                         throw new Exception("骰子数量与预期不符，重试次数过多，可能出现了未知错误！");
                     }
+
+                    if (dCount == 9 && expectDiceCount == 8)
+                    {
+                        dice9RetryCount++;
+                        if (dice9RetryCount > 5)
+                        {
+                            // 支援区存在 鲸井小弟 情况下骰子数量增加导致识别出错的问题 #1
+                            // 5次重试后仍然是9个骰子，出现多识别的情况是很稀少的，此时可以基本认为 支援区存在 鲸井小弟
+                            // TODO : 但是这个方法并不是100%准确，后续需要添加支援区判断
+                            MyLogger.Info("期望的骰子数量8，应为开局期望，重试多次后累计实际识别9个骰子的情况为5次", dCount, expectDiceCount);
+                            CurrentDiceCount = 9; // 修正当前骰子数量
+                            return true;
+                        }
+                    }
+
 
                     MyLogger.Info("当前骰子数量{}与期望的骰子数量{}不相等，重试", diceStatus.Sum(x => x.Value), expectDiceCount);
                     diceStatus = ActionPhaseDice();

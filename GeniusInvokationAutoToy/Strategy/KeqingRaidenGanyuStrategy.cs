@@ -123,6 +123,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void Round1()
         {
+            CurrentDiceCount = 8;
             // 0 投骰子
             ReRollDice(ElementalType.Electro, ElementalType.Omni);
 
@@ -131,12 +132,13 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 1 回合1 行动1 雷电将军使用1次二技能
             MyLogger.Info("回合1 行动1 雷电将军使用1次二技能");
-            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, 8);
+            bool useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Warn("没有足够的手牌或元素骰子释放技能，停止自动打牌");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
+            CurrentDiceCount -=3;
 
             RaidenEnergyNum++;
 
@@ -145,13 +147,13 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 2 回合1 行动2 雷电将军使用1次一技能
             MyLogger.Info("回合1 行动2 雷电将军使用1次一技能");
-            useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, 5);
+            useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Warn("没有足够的手牌或元素骰子释放技能，停止自动打牌");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
-
+            CurrentDiceCount -= 3;
             RaidenEnergyNum++;
 
             // 等待对方行动完成
@@ -171,6 +173,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void Round2()
         {
+            CurrentDiceCount = 8;
             CurrentCardCount += 2;
             // 0 投骰子
             ReRollDice(ElementalType.Electro, ElementalType.Cryo, ElementalType.Omni);
@@ -179,13 +182,14 @@ namespace GeniusInvokationAutoToy.Strategy
             WaitForMyTurn(1000);
 
             MyLogger.Info("回合2 行动1 雷电将军开大");
-            bool useSkillRes = ActionPhaseAutoUseSkill(1, 4, ElementalType.Electro, 8);
+            bool useSkillRes = ActionPhaseAutoUseSkill(1, 4, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
+            CurrentDiceCount -= 4;
 
             KeqingEnergyNum += 2;
             RaidenEnergyNum = 0;
@@ -196,18 +200,20 @@ namespace GeniusInvokationAutoToy.Strategy
 
             MyLogger.Info("回合2 行动2 切换甘雨");
             SwitchCharacterLater(3);
+            CurrentDiceCount -= 1;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
             MyLogger.Info("回合2 行动3 甘雨使用1次二技能");
-            useSkillRes = ActionPhaseAutoUseSkill(3, 3, ElementalType.Cryo, 3);
+            useSkillRes = ActionPhaseAutoUseSkill(3, 3, ElementalType.Cryo, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
+            CurrentDiceCount -= 3;
             GanyuEnergyNum++;
 
             // 等待对方行动完成
@@ -228,6 +234,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void Round3()
         {
+            CurrentDiceCount = 8;
             CurrentCardCount += 2;
             // 0 投骰子
             ReRollDice(ElementalType.Electro, ElementalType.Cryo, ElementalType.Omni);
@@ -236,13 +243,15 @@ namespace GeniusInvokationAutoToy.Strategy
             WaitForMyTurn(1000);
 
             MyLogger.Info("回合3 行动1 甘雨开大");
-            bool useSkillRes = ActionPhaseAutoUseSkill(1, 3, ElementalType.Cryo, 8);
+            bool useSkillRes = ActionPhaseAutoUseSkill(1, 3, ElementalType.Cryo, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
+
+            CurrentDiceCount -= 3;
             GanyuEnergyNum =0;
 
             // 等待对方行动完成 // 甘雨大招动画比较长
@@ -250,22 +259,31 @@ namespace GeniusInvokationAutoToy.Strategy
 
             MyLogger.Info("回合3 行动2 切换刻晴");
             SwitchCharacterLater(1);
+            CurrentDiceCount -= 1;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
             MyLogger.Info("回合3 行动3 刻晴使用1次二技能");
-            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, 4);
+            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Info("回合3 行动3 二技能无法使用，刻晴尝试使用一技能");
-                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, 4);
+                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, CurrentDiceCount);
                 if (!useSkillRes)
                 {
                     // 运气太差直接结束
                     MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                     throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
                 }
+                else
+                {
+                    CurrentDiceCount -= 3;
+                }
+            }
+            else
+            {
+                CurrentDiceCount -= 3;
             }
             KeqingEnergyNum++;
 
@@ -286,6 +304,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// </summary>
         public void Round4()
         {
+            CurrentDiceCount = 8;
             CurrentCardCount += 2;
             // 0 投骰子
             ReRollDice(ElementalType.Electro, ElementalType.Omni);
@@ -294,30 +313,39 @@ namespace GeniusInvokationAutoToy.Strategy
             WaitForMyTurn(1000);
 
             MyLogger.Info("回合4 行动1 刻晴开大");
-            bool useSkillRes = ActionPhaseAutoUseSkill(1, 4, ElementalType.Electro, 8);
+            bool useSkillRes = ActionPhaseAutoUseSkill(1, 4, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
             }
+            CurrentDiceCount -= 4;
             KeqingEnergyNum = 0;
 
             // 等待对方行动完成
             WaitForMyTurn(10000);
 
             MyLogger.Info("回合4 行动2 刻晴使用1次二技能");
-            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, 4);
+            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Electro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Info("回合4 行动3 二技能无法使用，刻晴尝试使用一技能");
-                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, 4);
+                useSkillRes = ActionPhaseAutoUseSkill(3, 1, ElementalType.Electro, CurrentDiceCount);
                 if (!useSkillRes)
                 {
                     // 运气太差直接结束
                     MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                     throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
                 }
+                else
+                {
+                    CurrentDiceCount -= 3;
+                }
+            }
+            else
+            {
+                CurrentDiceCount -= 3;
             }
             KeqingEnergyNum++;
         }
