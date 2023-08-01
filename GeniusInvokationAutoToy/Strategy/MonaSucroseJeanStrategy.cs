@@ -235,8 +235,8 @@ namespace GeniusInvokationAutoToy.Strategy
             }
             CurrentDiceCount -= 3;
 
-            // 等待对方行动完成
-            WaitForMyTurn(10000);
+            // 等待对方行动完成 // 大招久一点
+            WaitForMyTurn(12000);
 
             // 4 回合2 结束
             MyLogger.Info("我方点击回合结束");
@@ -399,7 +399,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 if (CurrentCharacterStatus.NegativeStatusList.Count > 0)
                 {
                     MyLogger.Warn("当前出战角色因为负面状态无法行动");
-                    throw new DuelEndException("当前出战角色因为负面状态无法行动，暂时无法支持此种情况，请尝试其他卡组或使用自定卡组的功能");
+                    throw new DuelEndException("当前出战角色因为负面状态无法行动，暂时无法支持此种情况，请尝试其他卡组或使用自定策略的功能");
                 }
             }
         }

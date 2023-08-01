@@ -927,22 +927,22 @@ namespace GeniusInvokationAutoToy.Strategy
                     {
                         inMyActionCount++;
                         // 至少存在一次在对方行动中
-                        if (inOpponentActionCount > 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            if (inMyActionCount < 3)
-                            {
-                                //MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
-                            }
-                            else
-                            {
-                                //MyLogger.Info("认定当前在我方回合,继续操作");
-                                break;
-                            }
-                        }
+                        //if (inOpponentActionCount > 0)
+                        //{
+                        //    break;
+                        //}
+                        //else
+                        //{
+                        //    if (inMyActionCount < 3)
+                        //    {
+                        //        MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
+                        //    }
+                        //    else
+                        //    {
+                        //        MyLogger.Info("认定当前在我方回合,继续操作");
+                        //        break;
+                        //    }
+                        //}
                     }
                 }
                 else if (IsInOpponentAction())
