@@ -317,7 +317,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 1 使用1次二技能
             MyLogger.Info("行动1 使用1次二技能");
-            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, roundDiceCount);
+            useSkillRes = ActionPhaseAutoUseSkill(2, 3, ElementalType.Hydro, CurrentDiceCount);
             if (!useSkillRes)
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
