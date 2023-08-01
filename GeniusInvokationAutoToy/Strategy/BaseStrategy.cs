@@ -836,7 +836,6 @@ namespace GeniusInvokationAutoToy.Strategy
                             if (inMyActionCount <= 3)
                             {
                                 MyLogger.Debug("无法确定对方是否已经行动过，额外等待...");
-                                continue;
                             }
                             else
                             {
@@ -863,7 +862,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 }
 
                 MyLogger.Info("对方仍在行动中,继续等待(次数{})...", retryCount);
-                Sleep(1000);
+                Sleep(800);
             }
         }
 

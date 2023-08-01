@@ -145,7 +145,7 @@ namespace GeniusInvokationAutoToy
             rtbConsole.Text = ""; // 清空日志
 
             cts = new CancellationTokenSource();
-            ;
+            
             BaseStrategy strategy;
             if (cboStrategy.SelectedIndex == 0)
             {
@@ -168,6 +168,9 @@ namespace GeniusInvokationAutoToy
 
                 await duel.CustomStrategyRunAsync(cts);
             }
+            // 打完了切回来
+            isAutoPlaying = false;
+            btnSwitch.Text = "开始自动打牌(F11)";
         }
 
         private void StopGame()
