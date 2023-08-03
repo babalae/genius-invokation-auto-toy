@@ -125,7 +125,6 @@
     <Compile Include="Core\ImageCapture.cs" />
     <Compile Include="Strategy\BaseStrategy.cs" />
     <Compile Include="Core\GameControl.cs" />
-    <Compile Include="Strategy\CustomStrategy.cs" />
     <Compile Include="Strategy\KeqingRaidenGanyuStrategy.cs" />
     <Compile Include="Strategy\Model\ActionCommand.cs" />
     <Compile Include="Strategy\Model\ActionEnum.cs" />

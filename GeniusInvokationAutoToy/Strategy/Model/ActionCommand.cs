@@ -9,9 +9,9 @@ namespace GeniusInvokationAutoToy.Strategy.Model
     public class ActionCommand
     {
         /// <summary>
-        ///  有异意，所以注释了
+        ///  角色
         /// </summary>
-        // public Character Character { get; set; }
+        public Character Character { get; set; }
 
         public ActionEnum Action { get; set; }
 
@@ -19,5 +19,21 @@ namespace GeniusInvokationAutoToy.Strategy.Model
         /// 目标编号（角色、技能）
         /// </summary>
         public int TargetIndex { get; set; }
+
+        public int GetDiceUseCount()
+        {
+            if (Action == ActionEnum.SwitchLater)
+            {
+                return 1;
+            }
+            else if (Action == ActionEnum.UseSkill)
+            {
+                return 0;
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 }

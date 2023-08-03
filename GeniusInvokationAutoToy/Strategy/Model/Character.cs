@@ -14,7 +14,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
     public class Character
     {
         /// <summary>
-        /// 0-2 和所在数组下标一致
+        /// 1-3 所在数组下标一致
         /// </summary>
         public int Index { get; set; }
         public string Name { get; set; }
@@ -23,15 +23,25 @@ namespace GeniusInvokationAutoToy.Strategy.Model
 
 
         /// <summary>
-        /// 是否阵亡
+        /// 是否被打败
         /// </summary>
-        public bool IsTakenOut { get; set; }
+        public bool IsDefeated { get; set; }
 
         /// <summary>
         /// 充能点
         /// </summary>
         public int Energy { get; set; }
 
+
+        /// <summary>
+        /// 充能点来自于图像识别
+        /// </summary>
+        public int EnergyByRecognition { get; set; }
+
+        /// <summary>
+        /// 角色身上的负面状态
+        /// </summary>
+        public List<CharacterStatusEnum> NegativeStatusList { get; set; }
 
         /// <summary>
         /// 角色区域

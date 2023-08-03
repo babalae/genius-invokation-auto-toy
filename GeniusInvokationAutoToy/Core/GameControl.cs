@@ -54,6 +54,9 @@ namespace GeniusInvokationAutoToy.Strategy
             return _uniqueInstance;
         }
 
+        public static bool OutputImageWhenError = true;
+
+
         public CancellationTokenSource cts;
 
         public ImageCapture capture = new ImageCapture();
@@ -204,7 +207,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     if (y1 == 0)
                     {
                         y1 = start;
-                        if (ImageRecognition.IsDebug)
+                        if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
                             Cv2.Line(srcMat, 0, y1, srcMat.Width, y1, Scalar.Red);
                         }
@@ -212,7 +215,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     else if (y2 == 0)
                     {
                         y2 = i;
-                        if (ImageRecognition.IsDebug)
+                        if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
                             Cv2.Line(srcMat, 0, y2, srcMat.Width, y2, Scalar.Red);
                         }
@@ -225,22 +228,20 @@ namespace GeniusInvokationAutoToy.Strategy
             if (y1 == 0 || y2 == 0)
             {
                 MyLogger.Warn("未识别到角色卡牌区域（Y轴）");
-                if (ImageRecognition.IsDebug)
+                if (OutputImageWhenError)
                 {
-                    Cv2.ImShow("识别窗口", srcMat);
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
-
                 throw new RetryException("未获取到角色区域");
             }
 
             if (y1 < windowRect.Height / 2 || y2 < windowRect.Height / 2)
             {
                 MyLogger.Warn("识别的角色卡牌区域（Y轴）错误：y1:{} y2:{}", y1, y2);
-                if (ImageRecognition.IsDebug)
+                if (OutputImageWhenError)
                 {
-                    Cv2.ImShow("识别窗口", srcMat);
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
-
                 throw new RetryException("未获取到角色区域");
             }
 
@@ -273,7 +274,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     //由连续区域进入空白区域了
                     inLine = false;
-                    if (ImageRecognition.IsDebug)
+                    if (ImageRecognition.IsDebug || OutputImageWhenError)
                     {
                         Cv2.Line(srcMat, start, 0, start, srcMat.Height, Scalar.Red);
                     }
@@ -285,11 +286,10 @@ namespace GeniusInvokationAutoToy.Strategy
             if (colLines.Count != 6)
             {
                 MyLogger.Warn("未识别到角色卡牌区域（X轴存在{}个识别点）", colLines.Count);
-                if (ImageRecognition.IsDebug)
+                if (OutputImageWhenError)
                 {
-                    Cv2.ImShow("识别窗口", srcMat);
+                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
-
                 throw new RetryException("未获取到角色区域");
             }
 
@@ -300,13 +300,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     var r = new Rectangle(colLines[i], y1, colLines[i + 1] - colLines[i], y2 - y1);
                     rects.Add(r);
-                    Cv2.Rectangle(srcMat, r.ToCvRect(), Scalar.Red, 2);
                 }
-            }
-
-            if (ImageRecognition.IsDebug)
-            {
-                Cv2.ImShow("识别窗口", srcMat);
             }
 
             if (rects == null || rects.Count != 3)
@@ -752,6 +746,64 @@ namespace GeniusInvokationAutoToy.Strategy
         }
 
         /// <summary>
+        /// 哪些出战角色被打倒了
+        /// </summary>
+        /// <returns>true 是已经被打倒</returns>
+        public bool[] WhatCharacterDefeated(List<Rectangle> rects)
+        {
+            if (rects == null || rects.Count != 3)
+            {
+                throw new Exception("未能获取到我方角色卡位置");
+            }
+
+            Mat resMat;
+            List<Point> pList = ImageRecognition.FindMultiTarget(Capture().ToMat(),
+                ImageResCollections.CharacterDefeatedBitmap.ToMat(), "defeated", out resMat);
+
+            bool[] res = new bool[3];
+            foreach (var p in pList)
+            {
+                if (!p.IsEmpty)
+                {
+                    for (int i = 0; i < rects.Count; i++)
+                    {
+                        if (isOverlap(rects[i],
+                                new Rectangle(p.X, p.Y, ImageResCollections.CharacterDefeatedBitmap.Width,
+                                    ImageResCollections.CharacterDefeatedBitmap.Height)))
+                        {
+                            res[i] = true;
+                        }
+                    }
+                }
+            }
+
+
+            return res;
+        }
+
+        /// <summary>
+        /// 判断矩形是否重叠
+        /// </summary>
+        /// <param name="rc1"></param>
+        /// <param name="rc2"></param>
+        /// <returns></returns>
+        public bool isOverlap(Rectangle rc1, Rectangle rc2)
+        {
+            if (rc1.X + rc1.Width > rc2.X &&
+                rc2.X + rc2.Width > rc1.X &&
+                rc1.Y + rc1.Height > rc2.Y &&
+                rc2.Y + rc2.Height > rc1.Y
+               )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// 是否对局完全结束
         /// </summary>
         /// <returns></returns>
@@ -783,7 +835,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// 等待我的回合
         /// 我方角色可能在此期间阵亡
         /// </summary>
-        public void WaitForMyTurn(int waitTime = 0)
+        public void WaitForMyTurn(Duel duel, int waitTime = 0)
         {
             if (waitTime > 0)
             {
@@ -799,13 +851,13 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     if (IsActiveCharacterTakenOut())
                     {
-                        MyLogger.Info("我方角色已阵亡，自定义模式不会自动切人，结束对局");
-                        throw new DuelEndException("我方角色已阵亡，自定义模式不会自动切人，结束对局");
-                        //SwitchCharacterWhenTakenOut(3);
-                        //SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
-                        //SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
-                        //ClickGameWindowCenter();
-                        //Sleep(2000); // 切人动画
+                        MyLogger.Info("当前出战角色被打败，需要选择新的出战角色");
+                        bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
+
+                        for (int i = defeatedArray.Length - 1; i >= 0; i--)
+                        {
+                            duel.Characters[i + 1].IsDefeated = defeatedArray[i];
+                        }
                     }
                     else
                     {
@@ -832,7 +884,7 @@ namespace GeniusInvokationAutoToy.Strategy
         /// 等待对方回合 和 回合结束阶段
         /// 我方角色可能在此期间阵亡
         /// </summary>
-        public void WaitOpponentAction()
+        public void WaitOpponentAction(Duel duel)
         {
             Random rd = new Random();
             Sleep(3000 + rd.Next(1, 1000));
@@ -852,14 +904,13 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     if (IsActiveCharacterTakenOut())
                     {
-                        MyLogger.Info("我方角色已阵亡，自定义模式不会自动切人，结束对局");
-                        throw new DuelEndException("我方角色已阵亡，自定义模式不会自动切人，结束对局");
-                        //SwitchCharacterWhenTakenOut(3);
-                        //SwitchCharacterWhenTakenOut(2); // 防止超载切角色，导致切换失败
-                        //SwitchCharacterWhenTakenOut(1); // 不知道最后死的是谁，所以切换3次
-                        //ClickGameWindowCenter();
-                        //MyLogger.Info("依次切换新角色完成，等待2s");
-                        //Sleep(2000); // 切人动画
+                        MyLogger.Info("当前出战角色被打败，需要选择新的出战角色");
+                        bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
+
+                        for (int i = defeatedArray.Length - 1; i >= 0; i--)
+                        {
+                            duel.Characters[i + 1].IsDefeated = defeatedArray[i];
+                        }
                     }
                 }
                 else if (IsDuelEnd())

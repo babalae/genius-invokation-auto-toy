@@ -20,7 +20,20 @@ namespace GeniusInvokationAutoToy.Strategy.Model
 
         public List<RoundStrategy> RoundStrategies { get; set; } = new List<RoundStrategy>();
 
+        /// <summary>
+        /// 行动指令队列
+        /// </summary>
+        public Queue<ActionCommand> ActionCommandQueue { get; set; } = new Queue<ActionCommand>();
+
+        /// <summary>
+        /// 当前回合数
+        /// </summary>
         public int RoundNum { get; set; } = 1;
+
+        /// <summary>
+        /// 角色牌位置
+        /// </summary>
+        public List<Rectangle> CharacterCardRects { get; set; }
 
         /// <summary>
         /// 手牌数量
@@ -58,14 +71,14 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                 CurrentCardCount = 5;
 
                 // 获取角色区域
-                var rects = Retry.Do(() => GameControl.GetInstance().GetCharacterRects(), TimeSpan.FromSeconds(1.5), 20);
-                if (rects == null || rects.Count != 3)
+                CharacterCardRects = Retry.Do(() => GameControl.GetInstance().GetCharacterRects(), TimeSpan.FromSeconds(1.5), 20);
+                if (CharacterCardRects == null || CharacterCardRects.Count != 3)
                 {
                     throw new DuelEndException("未成功获取到角色区域");
                 }
                 for (var i = 1; i < 4; i++)
                 {
-                    Characters[i].Area = rects[i-1];
+                    Characters[i].Area = CharacterCardRects[i-1];
                 }
 
                 // 出战角色
@@ -85,7 +98,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     GameControl.GetInstance().ReRollDice(list.ToArray());
 
                     // 等待到我的回合 // 投骰子动画时间是不确定的  // 可能是对方先手
-                    GameControl.GetInstance().WaitForMyTurn(1000);
+                    GameControl.GetInstance().WaitForMyTurn(this,1000);
 
                     CurrentDiceCount = 8;
                     for (int j = 0; j < RoundStrategies[i].ActionCommands.Count; j++)
@@ -113,7 +126,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                         }
 
                         // 等待对方行动完成
-                        GameControl.GetInstance().WaitForMyTurn(10000);
+                        GameControl.GetInstance().WaitForMyTurn(this,10000);
                     }
 
                     // 回合结束
@@ -121,7 +134,107 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     GameControl.GetInstance().RoundEnd();
 
                     // 等待对方行动+回合结算
-                    GameControl.GetInstance().WaitOpponentAction();
+                    GameControl.GetInstance().WaitOpponentAction(this);
+                }
+            }
+            catch (TaskCanceledException ex)
+            {
+                MyLogger.Info(ex.Message);
+            }
+            catch (DuelEndException ex)
+            {
+                MyLogger.Info(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                MyLogger.Error(ex.ToString());
+            }
+            finally
+            {
+                MyLogger.Info("========================================");
+            }
+        }
+
+        public void CustomStrategyRun2(CancellationTokenSource cts1)
+        {
+            Cts = cts1;
+            try
+            {
+                MyLogger.Info("========================================");
+                MyLogger.Info("对局启动！");
+
+                GameControl.GetInstance().Init(Cts);
+                GameControl.GetInstance().FocusGameWindow();
+                Retry.Do(() => GameControl.GetInstance().IsGameFocus(), TimeSpan.FromSeconds(1), 10);
+                // 对局准备 选择初始手牌
+                GameControl.GetInstance().CommonDuelPrepare();
+                CurrentCardCount = 5;
+
+                // 获取角色区域
+                CharacterCardRects = Retry.Do(() => GameControl.GetInstance().GetCharacterRects(), TimeSpan.FromSeconds(1.5), 20);
+                if (CharacterCardRects == null || CharacterCardRects.Count != 3)
+                {
+                    throw new DuelEndException("未成功获取到角色区域");
+                }
+                for (var i = 1; i < 4; i++)
+                {
+                    Characters[i].Area = CharacterCardRects[i - 1];
+                }
+
+                // 出战角色
+                CurrentCharacter = Characters[RoundStrategies[0].ActionCommands[0].TargetIndex];
+                Characters[RoundStrategies[0].ActionCommands[0].TargetIndex].ChooseFirst();
+
+                // 开始执行回合
+                while(true)
+                {
+                    MyLogger.Info($"--------------第{RoundNum}回合--------------");
+                    CurrentCardCount += 2;
+
+                    // 0 投骰子
+                    List<ElementalType> list = RoundStrategies[i].MaybeNeedElement(this);
+                    list.Add(ElementalType.Omni);
+                    list.Add(CurrentCharacter.Element);
+                    GameControl.GetInstance().ReRollDice(list.ToArray());
+
+                    // 等待到我的回合 // 投骰子动画时间是不确定的  // 可能是对方先手
+                    GameControl.GetInstance().WaitForMyTurn(this, 1000);
+
+                    CurrentDiceCount = 8;
+                    for (int j = 0; j < RoundStrategies[i].ActionCommands.Count; j++)
+                    {
+                        MyLogger.Info($"第{i + 1}回合执行：{RoundStrategies[i].RawCommandList[j]}");
+                        var actionCommand = RoundStrategies[i].ActionCommands[j];
+                        if (actionCommand.Action == ActionEnum.ChooseFirst)
+                        {
+                            continue;
+                        }
+                        else if (actionCommand.Action == ActionEnum.SwitchLater)
+                        {
+                            CurrentCharacter = Characters[actionCommand.TargetIndex];
+                            Characters[actionCommand.TargetIndex].SwitchLater();
+                            CurrentDiceCount--;
+                        }
+                        else if (actionCommand.Action == ActionEnum.UseSkill)
+                        {
+                            CurrentCharacter.UseSkill(actionCommand.TargetIndex, this);
+                            CurrentDiceCount -= CurrentCharacter.Skills[actionCommand.TargetIndex].Cost;
+                        }
+                        else
+                        {
+                            throw new Exception("未知的Action");
+                        }
+
+                        // 等待对方行动完成
+                        GameControl.GetInstance().WaitForMyTurn(this, 10000);
+                    }
+
+                    // 回合结束
+                    MyLogger.Info("我方点击回合结束");
+                    GameControl.GetInstance().RoundEnd();
+
+                    // 等待对方行动+回合结算
+                    GameControl.GetInstance().WaitOpponentAction(this);
                 }
             }
             catch (TaskCanceledException ex)
