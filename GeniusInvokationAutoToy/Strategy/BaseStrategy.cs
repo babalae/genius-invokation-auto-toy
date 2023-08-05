@@ -668,7 +668,7 @@ namespace GeniusInvokationAutoToy.Strategy
                             // TODO : 但是这个方法并不是100%准确，后续需要添加支援区判断
                             MyLogger.Info("期望的骰子数量8，应为开局期望，重试多次后累计实际识别9个骰子的情况为5次", dCount, expectDiceCount);
                             CurrentDiceCount = 9; // 修正当前骰子数量
-                            return true;
+                            break;
                         }
                     }
 

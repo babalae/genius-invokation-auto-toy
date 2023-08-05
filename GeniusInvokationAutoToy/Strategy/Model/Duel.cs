@@ -119,7 +119,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                         if (CurrentDiceCount <= 0)
                         {
                             MyLogger.Info("骰子已经用完");
-                            GameControl.GetInstance().Sleep(3000);
+                            GameControl.GetInstance().Sleep(2000);
                             break;
                         }
 
@@ -224,7 +224,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                             //{
                             //    throw new DuelEndException("策略中所有指令已经执行完毕，结束自动打牌");
                             //}
-                            GameControl.GetInstance().Sleep(3000);
+                            GameControl.GetInstance().Sleep(2000);
                             break;
                         }
 
