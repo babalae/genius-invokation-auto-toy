@@ -215,6 +215,11 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                             // 如果没有任何指令可以执行 则跳出循环
                             break;
                         }
+
+                        if (ActionCommandQueue.Count == 0)
+                        {
+                            throw new DuelEndException("策略中所有指令已经执行完毕，结束自动打牌");
+                        }
                     }
 
                     // 回合结束
@@ -225,6 +230,8 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     GameControl.GetInstance().WaitOpponentAction(this);
                     RoundNum++;
                 }
+
+                MyLogger.Info("没活了，结束自动打牌");
             }
             catch (TaskCanceledException ex)
             {

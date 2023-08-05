@@ -161,7 +161,7 @@ namespace GeniusInvokationAutoToy.Strategy
             Sleep(3000);
 
             // 是否是再角色出战选择界面
-            Retry.Do(IsInCharacterPickRetryThrowable, TimeSpan.FromSeconds(1), 5);
+            Retry.Do(IsInCharacterPickRetryThrowable, TimeSpan.FromSeconds(0.8), 20);
             MyLogger.Info("识别到已经在角色出战界面，等待1.5s");
             Sleep(1500);
         }
@@ -173,10 +173,12 @@ namespace GeniusInvokationAutoToy.Strategy
         public List<Rectangle> GetCharacterRects()
         {
             Mat srcMat = Capture().ToMat();
+            int halfHeight = srcMat.Height / 2;
+            Mat bottomMat = new Mat(srcMat, new Rect(0, halfHeight, srcMat.Width, srcMat.Height - halfHeight));
 
             var lowPurple = new Scalar(235, 245, 198);
             var highPurple = new Scalar(255, 255, 236);
-            Mat gray = ImageRecognition.Threshold(srcMat, lowPurple, highPurple);
+            Mat gray = ImageRecognition.Threshold(bottomMat, lowPurple, highPurple);
 
             // 水平投影到y轴 正常只有一个连续区域
             int[] h = ImageRecognition.HorizontalProjection(gray);
@@ -190,7 +192,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 if (h[i] > h.Average() * 10)
                 {
                     // 直方图
-                    Cv2.Line(srcMat, 0, i, h[i], i, Scalar.Yellow);
+                    Cv2.Line(bottomMat, 0, i, h[i], i, Scalar.Yellow);
 
                     if (!inLine)
                     {
@@ -210,7 +212,7 @@ namespace GeniusInvokationAutoToy.Strategy
                         y1 = start;
                         if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
-                            Cv2.Line(srcMat, 0, y1, srcMat.Width, y1, Scalar.Red);
+                            Cv2.Line(bottomMat, 0, y1, bottomMat.Width, y1, Scalar.Red);
                         }
                     }
                     else if (y2 == 0)
@@ -218,7 +220,7 @@ namespace GeniusInvokationAutoToy.Strategy
                         y2 = i;
                         if (ImageRecognition.IsDebug || OutputImageWhenError)
                         {
-                            Cv2.Line(srcMat, 0, y2, srcMat.Width, y2, Scalar.Red);
+                            Cv2.Line(bottomMat, 0, y2, bottomMat.Width, y2, Scalar.Red);
                         }
 
                         break;
@@ -231,22 +233,22 @@ namespace GeniusInvokationAutoToy.Strategy
                 MyLogger.Warn("未识别到角色卡牌区域（Y轴）");
                 if (OutputImageWhenError)
                 {
-                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
+                    Cv2.ImWrite("logs\\character_card_error.jpg", bottomMat);
                 }
 
                 throw new RetryException("未获取到角色区域");
             }
 
-            if (y1 < windowRect.Height / 2 || y2 < windowRect.Height / 2)
-            {
-                MyLogger.Warn("识别的角色卡牌区域（Y轴）错误：y1:{} y2:{}", y1, y2);
-                if (OutputImageWhenError)
-                {
-                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
-                }
+            //if (y1 < windowRect.Height / 2 || y2 < windowRect.Height / 2)
+            //{
+            //    MyLogger.Warn("识别的角色卡牌区域（Y轴）错误：y1:{} y2:{}", y1, y2);
+            //    if (OutputImageWhenError)
+            //    {
+            //        Cv2.ImWrite("logs\\character_card_error.jpg", bottomMat);
+            //    }
 
-                throw new RetryException("未获取到角色区域");
-            }
+            //    throw new RetryException("未获取到角色区域");
+            //}
 
 
             // 垂直投影
@@ -263,7 +265,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     if (ImageRecognition.IsDebug)
                     {
-                        Cv2.Line(srcMat, i, 0, i, v[i], Scalar.Yellow);
+                        Cv2.Line(bottomMat, i, 0, i, v[i], Scalar.Yellow);
                     }
 
                     if (!inLine)
@@ -279,7 +281,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     inLine = false;
                     if (ImageRecognition.IsDebug || OutputImageWhenError)
                     {
-                        Cv2.Line(srcMat, start, 0, start, srcMat.Height, Scalar.Red);
+                        Cv2.Line(bottomMat, start, 0, start, bottomMat.Height, Scalar.Red);
                     }
 
                     colLines.Add(start);
@@ -291,7 +293,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 MyLogger.Warn("未识别到角色卡牌区域（X轴存在{}个识别点）", colLines.Count);
                 if (OutputImageWhenError)
                 {
-                    Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
+                    Cv2.ImWrite("logs\\character_card_error.jpg", bottomMat);
                 }
 
                 throw new RetryException("未获取到角色区域");
@@ -302,7 +304,8 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 if (i % 2 == 0)
                 {
-                    var r = new Rectangle(colLines[i], y1, colLines[i + 1] - colLines[i], y2 - y1);
+                    var r = new Rectangle(colLines[i], halfHeight + y1, colLines[i + 1] - colLines[i],
+                        y2 - y1);
                     rects.Add(r);
                 }
             }
@@ -312,6 +315,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 throw new RetryException("未获取到角色区域");
             }
 
+            //Cv2.ImWrite("logs\\character_card_success.jpg", bottomMat);
             return rects;
         }
 
@@ -889,6 +893,7 @@ namespace GeniusInvokationAutoToy.Strategy
                                 break;
                             }
                         }
+
                         ClickGameWindowCenter();
                         Sleep(2000); // 切人动画
                     }
@@ -953,6 +958,7 @@ namespace GeniusInvokationAutoToy.Strategy
                                 break;
                             }
                         }
+
                         ClickGameWindowCenter();
                         Sleep(2000); // 切人动画
                     }
