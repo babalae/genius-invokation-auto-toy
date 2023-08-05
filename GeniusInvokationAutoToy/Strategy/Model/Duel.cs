@@ -115,7 +115,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     while (true)
                     {
                         // 没骰子了就结束行动
-                        MyLogger.Info($"当前骰子数[{CurrentDiceCount}],当前手牌数[{CurrentCardCount}]");
+                        MyLogger.Info($"行动开始,当前骰子数[{CurrentDiceCount}],当前手牌数[{CurrentCardCount}]");
                         if (CurrentDiceCount <= 0)
                         {
                             MyLogger.Info("骰子已经用完");
@@ -127,7 +127,8 @@ namespace GeniusInvokationAutoToy.Strategy.Model
 
                         List<int> alreadyExecutedActionIndex = new List<int>();
                         List<ActionCommand> alreadyExecutedActionCommand = new List<ActionCommand>();
-                        for (var i = 0; i < ActionCommandQueue.Count; i++)
+                        var i = 0;
+                        for (i = 0; i < ActionCommandQueue.Count; i++)
                         {
                             var actionCommand = ActionCommandQueue[i];
                             // 指令中的角色未被打败、角色有异常状态 跳过指令
@@ -149,7 +150,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                             {
                                 if (CurrentDiceCount >= 1)
                                 {
-                                    actionCommand.Character.SwitchLater();
+                                    actionCommand.SwitchLater();
                                     CurrentDiceCount--;
                                     alreadyExecutedActionIndex.Add(-actionCommand.Character.Index); // 标记为已执行
                                     var switchAction = new ActionCommand
@@ -170,7 +171,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                             }
 
                             // 2. 判断使用技能
-                            if (actionCommand.GetAllDiceUseCount() >= CurrentDiceCount)
+                            if (actionCommand.GetAllDiceUseCount() > CurrentDiceCount)
                             {
                                 MyLogger.Info("骰子不足以进行下一步：" + actionCommand);
                                 break;
@@ -188,11 +189,15 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                                 else
                                 {
                                     MyLogger.Warn("→指令执行失败(可能是手牌不够)：" + actionCommand);
+                                    GameControl.GetInstance().Sleep(1000);
+                                    GameControl.GetInstance().ClickGameWindowCenter();
                                 }
 
                                 break;
                             }
                         }
+
+
 
                         if (alreadyExecutedActionIndex.Count != 0)
                         {
@@ -213,6 +218,12 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                         else
                         {
                             // 如果没有任何指令可以执行 则跳出循环
+                            // TODO 也有可能是角色死亡/所有角色被冻结导致没有指令可以执行
+                            //if (i >= ActionCommandQueue.Count)
+                            //{
+                            //    throw new DuelEndException("策略中所有指令已经执行完毕，结束自动打牌");
+                            //}
+                            GameControl.GetInstance().Sleep(1500);
                             break;
                         }
 
@@ -230,8 +241,6 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     GameControl.GetInstance().WaitOpponentAction(this);
                     RoundNum++;
                 }
-
-                MyLogger.Info("没活了，结束自动打牌");
             }
             catch (TaskCanceledException ex)
             {
@@ -367,6 +376,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
                     num++;
                 }
             }
+
             return num;
         }
     }

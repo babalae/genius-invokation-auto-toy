@@ -81,11 +81,12 @@ namespace GeniusInvokationAutoToy.Strategy.Model
         }
 
         /// <summary>
-        /// 角色死亡的时候双击角色牌重新出战
+        /// 角色被打败的时候双击角色牌重新出战
         /// </summary>
         /// <returns></returns>
         public bool SwitchWhenTakenOut()
         {
+            MyLogger.Info($"有角色被打败,当前选择{Name}出战");
             Point p = GameControl.GetInstance().MakeOffset(Area.GetCenterPoint());
             // 选择角色
             MouseUtils.Click(p);

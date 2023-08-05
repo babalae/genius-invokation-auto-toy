@@ -877,25 +877,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     if (IsActiveCharacterTakenOut())
                     {
-                        MyLogger.Info("当前出战角色被打败，需要选择新的出战角色");
-                        bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
-
-                        for (int i = defeatedArray.Length - 1; i >= 0; i--)
-                        {
-                            duel.Characters[i + 1].IsDefeated = defeatedArray[i];
-                        }
-
-                        foreach (int j in duel.GetCharacterSwitchOrder())
-                        {
-                            if (!duel.Characters[j].IsDefeated)
-                            {
-                                duel.Characters[j].SwitchWhenTakenOut();
-                                break;
-                            }
-                        }
-
-                        ClickGameWindowCenter();
-                        Sleep(2000); // 切人动画
+                        DoWhenCharacterDefeated(duel);
                     }
                     else
                     {
@@ -942,25 +924,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     if (IsActiveCharacterTakenOut())
                     {
-                        MyLogger.Info("当前出战角色被打败，需要选择新的出战角色");
-                        bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
-
-                        for (int i = defeatedArray.Length - 1; i >= 0; i--)
-                        {
-                            duel.Characters[i + 1].IsDefeated = defeatedArray[i];
-                        }
-
-                        foreach (int j in duel.GetCharacterSwitchOrder())
-                        {
-                            if (!duel.Characters[j].IsDefeated)
-                            {
-                                duel.Characters[j].SwitchWhenTakenOut();
-                                break;
-                            }
-                        }
-
-                        ClickGameWindowCenter();
-                        Sleep(2000); // 切人动画
+                        DoWhenCharacterDefeated(duel);
                     }
                 }
                 else if (IsDuelEnd())
@@ -989,6 +953,40 @@ namespace GeniusInvokationAutoToy.Strategy
 
                 Sleep(1000 + rd.Next(1, 500));
             }
+        }
+
+        /// <summary>
+        /// 角色被打败后要切换角色
+        /// </summary>
+        /// <param name="duel"></param>
+        /// <exception cref="DuelEndException"></exception>
+        public void DoWhenCharacterDefeated(Duel duel)
+        {
+            MyLogger.Info("当前出战角色被打败，需要选择新的出战角色");
+            bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
+
+            for (int i = defeatedArray.Length - 1; i >= 0; i--)
+            {
+                duel.Characters[i + 1].IsDefeated = defeatedArray[i];
+            }
+
+            List<int> orderList = duel.GetCharacterSwitchOrder();
+            if (orderList.Count == 0)
+            {
+                throw new DuelEndException("后续行动策略中,已经没有可切换且存活的角色了,结束自动打牌(建议添加更多行动)");
+            }
+
+            foreach (int j in orderList)
+            {
+                if (!duel.Characters[j].IsDefeated)
+                {
+                    duel.Characters[j].SwitchWhenTakenOut();
+                    break;
+                }
+            }
+
+            ClickGameWindowCenter();
+            Sleep(2000); // 切人动画
         }
 
 
@@ -1027,7 +1025,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     Cv2.ImWrite("logs\\active_character_error.jpg", outMat);
                 }
 
-                throw new RetryException("角色Hp区块未识别到");
+                throw new RetryException($"角色Hp区块识别有误,识别到区块数量{pList.Count} != 当前存活角色数{duel.GetCharacterAliveNum()}");
             }
 
             int cnt = 0;
@@ -1114,7 +1112,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
         public Character WhichCharacterActiveWithRetry(Duel duel)
         {
-            return Retry.Do(() => WhichCharacterActive(duel), TimeSpan.FromSeconds(0.5), 8);
+            return Retry.Do(() => WhichCharacterActive(duel), TimeSpan.FromSeconds(0.3), 12);
         }
     }
 }
