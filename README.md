@@ -10,7 +10,9 @@ PC原神七圣召唤PVE全自动打牌。
 
 支持角色邀请、每周来客挑战、部分大世界NPC挑战。
 
-部分场景不支持、或者打不过、拿不满奖励。暂时不支持角色被超载、冻结的情况。
+部分场景不支持、或者打不过、拿不满奖励。
+
+1.3版本开始完全支持角色被超载、冻结等异常情况。
 
 其他分辨率、语言想要支持也简单的，只要在对应分辨率下截取一些图片替换软件目录下的文件即可。
 
@@ -21,7 +23,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 下载地址
 
-[📥Github下载（1.2）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.2/GeniusInvokationAutoToy.v1.2.zip)
+[📥Github下载（1.3）](https://github.com/babalae/genius-invokation-auto-toy/releases/download/1.3/GeniusInvokationAutoToy.v1.3.zip)
 
 [📥蓝奏云下载](https://wwmy.lanzouq.com/b00r9kqwf) 密码:coco
 
@@ -42,7 +44,7 @@ PC原神七圣召唤PVE全自动打牌。
 <img width="500px" src="https://raw.githubusercontent.com/babalae/genius-invokation-auto-toy/main/Image/p1.png"/>
 <img width="500px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/26b87618-473c-4a48-b5b3-dab0842118d5"/>
 
-2、**窗口化游戏，只支持无缩放1920x1080，游戏整个界面不能被其他窗口遮挡！游戏不能使用任何显卡滤镜！**
+2、**只支持1920x1080分辨率的游戏，游戏整个界面不能被其他窗口遮挡！游戏不能使用任何显卡滤镜！**
 
 3、在游戏内进入七圣召唤对局，到**初始手牌**界面，如下图：
 
@@ -52,9 +54,9 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 自定义自动打牌策略
 
-1. 普通用户：在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是从右往左数的。这种方式容错能力较低，且无逻辑和循环判断，编写时要保证角色角色不会在对局中死亡，推荐针对某些固定行动的对局进行编写。
-2. 会编程的用户：可以 Fork 本项目添加新的策略后发起PR，参考 [MonaSucroseJeanStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/MonaSucroseJeanStrategy.cs) 、[KeqingRaidenGanyuStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/KeqingRaidenGanyuStrategy.cs) 继承 [BaseStrategy.cs](https://github.com/babalae/genius-invokation-auto-toy/blob/main/GeniusInvokationAutoToy/Strategy/BaseStrategy.cs) 后实现自己的打牌策略，只需进行各种情况的逻辑判断以及传参即可。
+在软件当前目录的 `strategy` 的文件夹下，复制一个策略示例txt文件，自行参考格式编辑即可，注意技能1~3是**从右往左数**的。软件会自动根据行动策略和当前对局情况来切换角色和使用技能。
 
+如果你有更好的卡组策略、或者是某种情况下的针对解法，欢迎发[Issue](https://github.com/babalae/genius-invokation-auto-toy/issues)分享~
 
 ## FAQ
 * 为什么需要管理员权限？
