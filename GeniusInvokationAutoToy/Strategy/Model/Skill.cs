@@ -17,11 +17,15 @@ namespace GeniusInvokationAutoToy.Strategy.Model
         /// <summary>
         /// 消耗指定元素骰子数量
         /// </summary>
-        public int Cost { get; set; }
+        public int SpecificElementCost { get; set; }
 
         /// <summary>
         /// 消耗杂色骰子数量
         /// </summary>
-        public int CostAny { get; set; } = 0;
+        public int AnyElementCost { get; set; } = 0;
+        /// <summary>
+        /// 消耗指定元素骰子数量 + 消耗杂色骰子数量 = 消耗总骰子数量
+        /// </summary>
+        public int AllCost { get; set; }
     }
 }

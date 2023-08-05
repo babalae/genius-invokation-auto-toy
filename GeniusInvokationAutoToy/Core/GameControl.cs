@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GeniusInvokationAutoToy.Strategy.Model;
 using Point = System.Drawing.Point;
+using GeniusInvokationAutoToy.Strategy.Model.Old;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
@@ -232,6 +233,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
+
                 throw new RetryException("未获取到角色区域");
             }
 
@@ -242,6 +244,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
+
                 throw new RetryException("未获取到角色区域");
             }
 
@@ -290,6 +293,7 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     Cv2.ImWrite("logs\\character_card_error.jpg", srcMat);
                 }
+
                 throw new RetryException("未获取到角色区域");
             }
 
@@ -409,12 +413,12 @@ namespace GeniusInvokationAutoToy.Strategy
 
             if (count != 8)
             {
-                MyLogger.Warn($"骰子界面识别到了{count}个骰子");
+                MyLogger.Debug($"投骰子界面识别到了{count}个骰子,等待重试");
                 return false;
             }
             else
             {
-                MyLogger.Info($"骰子界面识别到了{count}个骰子");
+                MyLogger.Info($"投骰子界面识别到了{count}个骰子");
             }
 
             foreach (KeyValuePair<string, List<Point>> kvp in dictionary)
@@ -461,6 +465,7 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 msg += elementalType.ToChinese() + " ";
             }
+
             MyLogger.Info("保留" + msg + "骰子");
             Sleep(5000);
             int retryCount = 0;
@@ -474,9 +479,9 @@ namespace GeniusInvokationAutoToy.Strategy
                     throw new DuelEndException("对战已结束,停止自动打牌！");
                 }
 
-                MyLogger.Warn("识别骰子数量不正确,第{}次重试中...", retryCount);
-                Sleep(1000);
-                if (retryCount > 20)
+                //MyLogger.Debug("识别骰子数量不正确,第{}次重试中...", retryCount);
+                Sleep(500);
+                if (retryCount > 35)
                 {
                     throw new Exception("识别骰子数量不正确,重试超时,停止自动打牌！");
                 }
@@ -875,6 +880,17 @@ namespace GeniusInvokationAutoToy.Strategy
                         {
                             duel.Characters[i + 1].IsDefeated = defeatedArray[i];
                         }
+
+                        foreach (int j in duel.GetCharacterSwitchOrder())
+                        {
+                            if (!duel.Characters[j].IsDefeated)
+                            {
+                                duel.Characters[j].SwitchWhenTakenOut();
+                                break;
+                            }
+                        }
+                        ClickGameWindowCenter();
+                        Sleep(2000); // 切人动画
                     }
                     else
                     {
@@ -928,6 +944,17 @@ namespace GeniusInvokationAutoToy.Strategy
                         {
                             duel.Characters[i + 1].IsDefeated = defeatedArray[i];
                         }
+
+                        foreach (int j in duel.GetCharacterSwitchOrder())
+                        {
+                            if (!duel.Characters[j].IsDefeated)
+                            {
+                                duel.Characters[j].SwitchWhenTakenOut();
+                                break;
+                            }
+                        }
+                        ClickGameWindowCenter();
+                        Sleep(2000); // 切人动画
                     }
                 }
                 else if (IsDuelEnd())
@@ -956,6 +983,132 @@ namespace GeniusInvokationAutoToy.Strategy
 
                 Sleep(1000 + rd.Next(1, 500));
             }
+        }
+
+
+        /// <summary>
+        /// 哪个角色处于出战状态
+        /// </summary>
+        /// <returns></returns>
+        public Character WhichCharacterActive(Duel duel)
+        {
+            if (duel.CharacterCardRects == null || duel.CharacterCardRects.Count != 3)
+            {
+                throw new Exception("未能获取到我方角色卡位置");
+            }
+
+            Mat srcMat = Capture().ToMat();
+
+            // 切割下半部分
+            int halfHeight = srcMat.Height / 2;
+            Mat bottomMat = new Mat(srcMat, new Rect(0, halfHeight, srcMat.Width, srcMat.Height - halfHeight));
+            Mat resMat;
+            List<Point> pList = ImageRecognition.FindMultiTarget(bottomMat,
+                ImageResCollections.CharacterHpUpperBitmap.ToMat(), "HpUpper", out resMat, 0.7);
+
+            if (pList.Count != duel.GetCharacterAliveNum())
+            {
+                if (OutputImageWhenError)
+                {
+                    var outMat = srcMat.Clone();
+                    foreach (var point in pList)
+                    {
+                        Cv2.Rectangle(outMat,
+                            new Rect(point.X, point.Y + halfHeight, ImageResCollections.CharacterHpUpperBitmap.Width,
+                                ImageResCollections.CharacterHpUpperBitmap.Height), Scalar.Red, 2);
+                    }
+
+                    Cv2.ImWrite("logs\\active_character_error.jpg", outMat);
+                }
+
+                throw new RetryException("角色Hp区块未识别到");
+            }
+
+            int cnt = 0;
+            for (var i = 1; i < duel.Characters.Length; i++)
+            {
+                var cardRect = duel.Characters[i].Area;
+                // 2倍高度 保证能够矩形相交
+                var rect1 = new Rectangle(cardRect.X, cardRect.Y - cardRect.Height, cardRect.Width,
+                    cardRect.Height + cardRect.Height);
+
+                foreach (var point in pList)
+                {
+                    var rect2 = new Rectangle(point.X, halfHeight + point.Y,
+                        ImageResCollections.CharacterHpUpperBitmap.Width,
+                        ImageResCollections.CharacterHpUpperBitmap.Height);
+                    if (isOverlap(rect1, rect2))
+                    {
+                        duel.Characters[i].HpUpperArea = rect2;
+                        // 出战角色判断
+                        if (halfHeight + point.Y < cardRect.Y)
+                        {
+                            cnt++;
+                            duel.CurrentCharacter = duel.Characters[i];
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (cnt != 1)
+            {
+                if (OutputImageWhenError)
+                {
+                    var outMat = srcMat.Clone();
+                    foreach (var point in pList)
+                    {
+                        Cv2.Rectangle(outMat,
+                            new Rect(point.X, point.Y + halfHeight, ImageResCollections.CharacterHpUpperBitmap.Width,
+                                ImageResCollections.CharacterHpUpperBitmap.Height), Scalar.Red, 2);
+                    }
+
+                    foreach (var rc in duel.CharacterCardRects)
+                    {
+                        Cv2.Rectangle(outMat,
+                            rc.ToCvRect(), Scalar.Green, 2);
+                    }
+
+                    Cv2.ImWrite("logs\\active_character_error.jpg", outMat);
+                }
+
+                throw new RetryException($"识别到{cnt}个出战角色");
+            }
+
+            // 截取出战角色区域扩展
+            Mat characterMat = new Mat(srcMat, new Rect(duel.CurrentCharacter.Area.X,
+                duel.CurrentCharacter.Area.Y,
+                duel.CurrentCharacter.Area.Width + 40,
+                duel.CurrentCharacter.Area.Height +
+                duel.CurrentCharacter.Area.Y - duel.CurrentCharacter.HpUpperArea.Y));
+            // 识别角色异常状态
+            Point pCharacterStatusFreeze = ImageRecognition.FindSingleTarget(characterMat.Clone(),
+                ImageResCollections.CharacterStatusFreezeBitmap.ToMat(), 0.7);
+            if (!pCharacterStatusFreeze.IsEmpty)
+            {
+                duel.CurrentCharacter.StatusList.Add(CharacterStatusEnum.Frozen);
+            }
+
+            Point pCharacterStatusDizziness = ImageRecognition.FindSingleTarget(characterMat.Clone(),
+                ImageResCollections.CharacterStatusDizzinessBitmap.ToMat(), 0.7);
+            if (!pCharacterStatusDizziness.IsEmpty)
+            {
+                duel.CurrentCharacter.StatusList.Add(CharacterStatusEnum.Dizziness);
+            }
+
+            // 识别角色能量
+            List<Point> energyPointList = ImageRecognition.FindMultiTarget(characterMat.Clone(),
+                ImageResCollections.CharacterEnergyOnBitmap.ToMat(), "e", out resMat);
+            duel.CurrentCharacter.EnergyByRecognition = energyPointList.Count;
+
+            MyLogger.Info("当前出战" + duel.CurrentCharacter.ToString());
+            return duel.CurrentCharacter;
+        }
+
+        public Character WhichCharacterActiveWithRetry(Duel duel)
+        {
+            return Retry.Do(() => WhichCharacterActive(duel), TimeSpan.FromSeconds(0.5), 8);
         }
     }
 }

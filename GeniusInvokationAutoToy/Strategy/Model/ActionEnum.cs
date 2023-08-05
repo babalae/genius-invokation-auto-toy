@@ -20,11 +20,28 @@ namespace GeniusInvokationAutoToy.Strategy.Model
             switch (type)
             {
                 case "出战":
-                    return ActionEnum.ChooseFirst;
+                    //return ActionEnum.ChooseFirst;
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 case "切换":
-                    return ActionEnum.SwitchLater;
+                    //return ActionEnum.SwitchLater;
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 case "使用":
                     return ActionEnum.UseSkill;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        public static string ToChinese(this ActionEnum type)
+        {
+            switch (type)
+            {
+                case ActionEnum.ChooseFirst:
+                    return "出战";
+                case ActionEnum.SwitchLater:
+                    return "切换";
+                case ActionEnum.UseSkill:
+                    return "使用";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

@@ -41,12 +41,28 @@ namespace GeniusInvokationAutoToy.Strategy.Model
         /// <summary>
         /// 角色身上的负面状态
         /// </summary>
-        public List<CharacterStatusEnum> NegativeStatusList { get; set; }
+        public List<CharacterStatusEnum> StatusList { get; set; } = new List<CharacterStatusEnum>();
 
         /// <summary>
         /// 角色区域
         /// </summary>
         public Rectangle Area { get; set; }
+        /// <summary>
+        /// 血量上方区域，用于判断是否出战
+        /// </summary>
+        public Rectangle HpUpperArea { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"角色{Index}，");
+            sb.Append($"充能={EnergyByRecognition}，");
+            if (StatusList?.Count > 0)
+            {
+                sb.Append($"状态：{string.Join(",", StatusList)}");
+            }
+            return sb.ToString();
+        }
 
         public bool ChooseFirst()
         {
@@ -83,16 +99,15 @@ namespace GeniusInvokationAutoToy.Strategy.Model
         public bool UseSkill(int skillIndex, Duel duel)
         {
             bool res = GameControl.GetInstance()
-                .ActionPhaseAutoUseSkill(skillIndex, Skills[skillIndex].Cost, Skills[skillIndex].Type, duel);
+                .ActionPhaseAutoUseSkill(skillIndex, Skills[skillIndex].SpecificElementCost, Skills[skillIndex].Type, duel);
             if (res)
             {
-                Energy++;
-                return res;
+                return true;
             }
             else
             {
                 MyLogger.Warn("没有足够的手牌或元素骰子释放技能，停止自动打牌");
-                throw new DuelEndException("没有足够的手牌或元素骰子释放技能，停止自动打牌");
+                return false;
             }
         }
     }

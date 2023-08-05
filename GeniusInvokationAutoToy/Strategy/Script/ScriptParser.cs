@@ -64,6 +64,7 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                         var character = ParseCharacter(line);
                         duel.Characters[character.Index] = character;
                     }
+                    // 这个分支已弃用
                     else if (stage.StartsWith("回合"))
                     {
                         Trace.Assert(duel.Characters[3] != null, "角色未定义");
@@ -102,6 +103,35 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                         duel.RoundStrategies[roundNum - 1].ActionCommands.Add(actionCommand);
                         duel.RoundStrategies[roundNum - 1].RawCommandList.Add(line);
                     }
+                    else if (stage == "策略定义:")
+                    {
+                        Trace.Assert(duel.Characters[3] != null, "角色未定义");
+
+                        string[] actionParts = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                        Trace.Assert(actionParts.Length == 3, "策略中的行动命令解析错误");
+                        Trace.Assert(actionParts[1] == "使用", "策略中的行动命令解析错误");
+
+                        var actionCommand = new ActionCommand();
+                        var action = actionParts[1].ChineseToActionEnum();
+                        actionCommand.Action = action;
+
+                        int j = 1;
+                        for ( j = 1; j <= 3; j++)
+                        {
+                            var character = duel.Characters[j];
+                            if (character != null && character.Name == actionParts[0])
+                            {
+                                actionCommand.Character = character;
+                                break;
+                            }
+                        }
+                        Trace.Assert(j <= 3, "策略中的行动命令解析错误：角色名称无法从角色定义中匹配到");
+
+                        int skillNum = int.Parse(Regex.Replace(actionParts[2], @"[^0-9]+", ""));
+                        Trace.Assert(skillNum < 5, "策略中的行动命令解析错误：技能编号错误");
+                        actionCommand.TargetIndex = skillNum;
+                        duel.ActionCommandQueue.Add(actionCommand);
+                    }
                     else
                     {
                         throw new Exception($"未知的定义字段：{stage}");
@@ -109,8 +139,6 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                 }
 
                 Trace.Assert(duel.Characters[3] != null, "角色未定义，请确认策略文本格式是否为UTF-8");
-                Trace.Assert(duel.RoundStrategies[0].ActionCommands[0].Action == ActionEnum.ChooseFirst,
-                    "回合1的首个指令必须是出战角色");
             }
             catch (Exception ex)
             {
@@ -171,8 +199,14 @@ namespace GeniusInvokationAutoToy.Strategy.Script
             Trace.Assert(skill.Index >= 1 && skill.Index <= 5, "技能序号必须在1-5之间");
             var costStr = parts[1];
             var costParts = costStr.Split('+');
-            skill.Cost = int.Parse(costParts[0].Substring(0, 1));
+            skill.SpecificElementCost = int.Parse(costParts[0].Substring(0, 1));
             skill.Type = costParts[0].Substring(1, 1).ChineseToElementalType();
+            // 杂色骰子在+号右边
+            if (costParts.Length > 1)
+            {
+                skill.AnyElementCost = int.Parse(costParts[1].Substring(0, 1));
+            }
+            skill.AllCost = skill.SpecificElementCost + skill.AnyElementCost;
             return skill;
         }
     }
