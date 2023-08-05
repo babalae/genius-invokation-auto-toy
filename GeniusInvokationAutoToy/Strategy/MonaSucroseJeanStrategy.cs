@@ -216,6 +216,8 @@ namespace GeniusInvokationAutoToy.Strategy
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return;
             }
             CurrentDiceCount -= 3;
             SucroseEnergyNum++;
@@ -232,6 +234,8 @@ namespace GeniusInvokationAutoToy.Strategy
                 // 运气太差直接结束
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return;
             }
             CurrentDiceCount -= 3;
 
@@ -268,6 +272,8 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return;
             }
             CurrentDiceCount -= 3;
 
@@ -281,6 +287,8 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return;
             }
             CurrentDiceCount -= 3;
 
@@ -322,6 +330,8 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return;
             }
 
             CurrentDiceCount -= 3;
@@ -345,6 +355,8 @@ namespace GeniusInvokationAutoToy.Strategy
                 {
                     MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                     RoundEnd();
+                    WaitOpponentAction();
+                    return;
                 }
 
                 CurrentDiceCount -= 3;
@@ -372,6 +384,8 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 MyLogger.Info("没有足够的手牌或元素骰子释放技能，回合结束");
                 RoundEnd();
+                WaitOpponentAction();
+                return roundDiceCount;
             }
 
             roundDiceCount -= 3;
