@@ -18,8 +18,7 @@ PC原神七圣召唤PVE全自动打牌。
 
 ## 截图
 
-![image](https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/937cdac8-d65f-4fed-a2fb-9a00ad3fb88f)
-
+![image](https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/b41dc84f-6a83-406c-81ef-3eaddeac28c6)
 
 ## 下载地址
 
