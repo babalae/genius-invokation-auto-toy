@@ -46,7 +46,7 @@ namespace GeniusInvokationAutoToy
             // 
             this.rtbConsole.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rtbConsole.Location = new System.Drawing.Point(9, 93);
-            this.rtbConsole.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rtbConsole.Margin = new System.Windows.Forms.Padding(2);
             this.rtbConsole.Name = "rtbConsole";
             this.rtbConsole.Size = new System.Drawing.Size(387, 390);
             this.rtbConsole.TabIndex = 7;
@@ -57,7 +57,7 @@ namespace GeniusInvokationAutoToy
             // 
             this.chkTopMost.AutoSize = true;
             this.chkTopMost.Location = new System.Drawing.Point(142, 14);
-            this.chkTopMost.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chkTopMost.Margin = new System.Windows.Forms.Padding(2);
             this.chkTopMost.Name = "chkTopMost";
             this.chkTopMost.Size = new System.Drawing.Size(72, 16);
             this.chkTopMost.TabIndex = 9;
@@ -68,7 +68,7 @@ namespace GeniusInvokationAutoToy
             // btnSwitch
             // 
             this.btnSwitch.Location = new System.Drawing.Point(266, 38);
-            this.btnSwitch.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSwitch.Margin = new System.Windows.Forms.Padding(2);
             this.btnSwitch.Name = "btnSwitch";
             this.btnSwitch.Size = new System.Drawing.Size(130, 51);
             this.btnSwitch.TabIndex = 10;
@@ -136,7 +136,7 @@ namespace GeniusInvokationAutoToy
             this.cboGameResolution.Items.AddRange(new object[] {
             "1920x1080"});
             this.cboGameResolution.Location = new System.Drawing.Point(99, 69);
-            this.cboGameResolution.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cboGameResolution.Margin = new System.Windows.Forms.Padding(2);
             this.cboGameResolution.Name = "cboGameResolution";
             this.cboGameResolution.Size = new System.Drawing.Size(149, 20);
             this.cboGameResolution.TabIndex = 21;
@@ -145,11 +145,8 @@ namespace GeniusInvokationAutoToy
             // 
             this.cboStrategy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboStrategy.FormattingEnabled = true;
-            this.cboStrategy.Items.AddRange(new object[] {
-            "莫娜砂糖琴(推荐)",
-            "刻晴雷电将军甘雨"});
             this.cboStrategy.Location = new System.Drawing.Point(99, 41);
-            this.cboStrategy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cboStrategy.Margin = new System.Windows.Forms.Padding(2);
             this.cboStrategy.Name = "cboStrategy";
             this.cboStrategy.Size = new System.Drawing.Size(149, 20);
             this.cboStrategy.TabIndex = 20;
@@ -170,7 +167,7 @@ namespace GeniusInvokationAutoToy
             this.Controls.Add(this.chkTopMost);
             this.Controls.Add(this.rtbConsole);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FormMain";
             this.Text = "原神自动打牌（自动七胜召唤对局）";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);

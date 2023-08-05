@@ -460,7 +460,7 @@ namespace GeniusInvokationAutoToy.Strategy
             // 3.重投骰子
             MyLogger.Info("等待5s投骰动画...");
 
-            string msg = "";
+            string msg = " ";
             foreach (var elementalType in holdElementalTypes)
             {
                 msg += elementalType.ToChinese() + " ";

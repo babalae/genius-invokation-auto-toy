@@ -19,6 +19,7 @@ using GeniusInvokationAutoToy.Strategy.Model.Old;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
+    [Obsolete]
     public abstract class BaseStrategy
     {
         public static bool OutputImageWhenError = true;

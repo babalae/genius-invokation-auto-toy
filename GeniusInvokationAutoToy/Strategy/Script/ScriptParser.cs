@@ -46,11 +46,6 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                     if (line.Contains(":"))
                     {
                         stage = line;
-                        if (stage.StartsWith("回合"))
-                        {
-                            duel.RoundStrategies.Add(new RoundStrategy());
-                        }
-
                         continue;
                     }
 
@@ -63,45 +58,6 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                     {
                         var character = ParseCharacter(line);
                         duel.Characters[character.Index] = character;
-                    }
-                    // 这个分支已弃用
-                    else if (stage.StartsWith("回合"))
-                    {
-                        Trace.Assert(duel.Characters[3] != null, "角色未定义");
-
-                        int roundNum = int.Parse(Regex.Replace(stage, @"[^0-9]+", ""));
-                        Trace.Assert(roundNum <= 30, "你的回合数也太多了(>30)");
-
-                        string[] actionParts = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                        Trace.Assert(actionParts.Length == 2, "回合中的命令解析错误");
-
-                        var actionCommand = new ActionCommand();
-                        var action = actionParts[0].ChineseToActionEnum();
-                        actionCommand.Action = action;
-                        if (action == ActionEnum.ChooseFirst || action == ActionEnum.SwitchLater)
-                        {
-                            foreach (var character in duel.Characters)
-                            {
-                                if (character!= null && character.Name == actionParts[1])
-                                {
-                                    actionCommand.TargetIndex = character.Index;
-                                    break;
-                                }
-                            }
-                        }
-                        else if (action == ActionEnum.UseSkill)
-                        {
-                            int skillNum = int.Parse(Regex.Replace(actionParts[1], @"[^0-9]+", ""));
-                            Trace.Assert(skillNum < 5, "技能编号错误");
-                            actionCommand.TargetIndex = skillNum;
-                        }
-                        else
-                        {
-                            throw new Exception($"未知的动作：{action}");
-                        }
-
-                        duel.RoundStrategies[roundNum - 1].ActionCommands.Add(actionCommand);
-                        duel.RoundStrategies[roundNum - 1].RawCommandList.Add(line);
                     }
                     else if (stage == "策略定义:")
                     {

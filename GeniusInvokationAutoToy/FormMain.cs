@@ -63,8 +63,11 @@ namespace GeniusInvokationAutoToy
 
 支持角色邀请、每周来客挑战、大世界NPC挑战（部分场景不支持、或者打不过/拿不满奖励）。
 
-1、牌组必须是【莫娜、砂糖、琴】或者【刻晴、雷电将军、甘雨】（选择对应的策略），顺序不能变，带什么牌无所谓
-2、窗口化游戏，只支持1920x1080，游戏整个界面不能被其他窗口遮挡！
+现在已经支持出现以下异常情况时继续进行对局：1.角色被动切换角色,比如超载、琴/砂糖技能；2.当前角色无法行动，比如冻结、被泡泡困住（水深渊法师技能）
+
+使用方法：
+1、牌组必须是和策略一致，比如【莫娜、砂糖、琴】或者【刻晴、雷电将军、甘雨】等，顺序不能变，带什么牌无所谓。策略可以自定义，放在软件所在目录的 strategy 文件夹下，格式参考自带的策略。
+2、只支持1920x1080窗口或全屏游戏，游戏整个界面不能被其他窗口遮挡！
 3、在游戏内进入七圣召唤对局，到初始手牌界面
 4、然后直接点击开始自动打牌，双手离开键盘鼠标（快捷键F11）。
 ";
@@ -72,14 +75,14 @@ namespace GeniusInvokationAutoToy
             LoadCustomScript();
             YSStatus();
 
-            cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
-            if (cboGameResolution.Items.Count <= Properties.Settings.Default.CboGameResolutionSelectIndex)
+            cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
+            if (cboStrategy.Items.Count - 1 >= Properties.Settings.Default.CboStrategySelectIndex)
             {
-                cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
+                cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
             }
             else
             {
-                cboGameResolution.SelectedIndex = 0;
+                cboStrategy.SelectedIndex = 0;
             }
 
             chkTopMost.Checked = Properties.Settings.Default.TopMostChecked;
@@ -145,29 +148,17 @@ namespace GeniusInvokationAutoToy
             rtbConsole.Text = ""; // 清空日志
 
             cts = new CancellationTokenSource();
-            
-            BaseStrategy strategy;
-            if (cboStrategy.SelectedIndex == 0)
-            {
-                strategy = new MonaSucroseJeanStrategy(window);
-                await strategy.RunAsync(cts);
-            }
-            else if (cboStrategy.SelectedIndex == 1)
-            {
-                strategy = new KeqingRaidenGanyuStrategy(window);
-                await strategy.RunAsync(cts);
-            }
-            else
-            {
-                Duel duel = ScriptParser.Parse(File.ReadAllText(Path.Combine(Application.StartupPath, "strategy",
-                    cboStrategy.Text + ".txt"), Encoding.UTF8));
-                if (duel == null)
-                {
-                    throw new Exception("策略解析失败");
-                }
 
-                await duel.CustomStrategyRunAsync(cts);
+
+            Duel duel = ScriptParser.Parse(File.ReadAllText(Path.Combine(Application.StartupPath, "strategy",
+                cboStrategy.Text + ".txt"), Encoding.UTF8));
+            if (duel == null)
+            {
+                throw new Exception("策略解析失败");
             }
+
+            await duel.CustomStrategyRunAsync(cts);
+
             // 打完了切回来
             isAutoPlaying = false;
             btnSwitch.Text = "开始自动打牌(F11)";
