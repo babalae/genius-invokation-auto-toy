@@ -106,7 +106,7 @@ namespace GeniusInvokationAutoToy.Strategy.Model
             }
             else
             {
-                MyLogger.Warn("没有足够的手牌或元素骰子释放技能，停止自动打牌");
+                MyLogger.Warn("没有足够的手牌或元素骰子释放技能");
                 return false;
             }
         }
