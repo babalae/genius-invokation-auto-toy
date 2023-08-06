@@ -36,7 +36,7 @@ PC原神七圣召唤PVE全自动打牌。
   * 系统是64位（都已经2023年了，总没有还在用32位系统的人了吧）
   * [.NET Framework 4.7.2](https://support.microsoft.com/zh-cn/topic/%E9%80%82%E7%94%A8%E4%BA%8E-windows-%E7%9A%84-microsoft-net-framework-4-7-2-%E7%A6%BB%E7%BA%BF%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-05a72734-2127-a15d-50cf-daf56d5faec2) 或更高版本。**低于此版本在打开程序时可能无反应，或者直接报错**。
 
-**游戏推荐图像设置（图像质量中以上）：**
+**游戏推荐图像设置（图像质量中以上、游戏亮度必须为正常亮度）：**
 
 <img width="600px" src="https://github.com/babalae/genius-invokation-auto-toy/assets/15783049/d1923d04-42ca-4078-839a-1ba38325922f"/>
 
