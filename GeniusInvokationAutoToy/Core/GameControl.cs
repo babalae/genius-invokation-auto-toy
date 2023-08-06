@@ -156,6 +156,10 @@ namespace GeniusInvokationAutoToy.Strategy
         {
             Retry.Do(() =>
             {
+                if (cts != null && cts.IsCancellationRequested)
+                {
+                    return;
+                }
                 string name = GetActiveProcessName();
                 if (!string.IsNullOrEmpty(name) && name != "YuanShen" && name != "GenshinImpact")
                 {
