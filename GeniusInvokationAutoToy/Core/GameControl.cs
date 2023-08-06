@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using GeniusInvokationAutoToy.Strategy.Model;
 using Point = System.Drawing.Point;
 using GeniusInvokationAutoToy.Strategy.Model.Old;
+using static GeniusInvokationAutoToy.Utils.Native;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
@@ -215,7 +216,7 @@ namespace GeniusInvokationAutoToy.Strategy
                             Cv2.Line(bottomMat, 0, y1, bottomMat.Width, y1, Scalar.Red);
                         }
                     }
-                    else if (y2 == 0)
+                    else if (y2 == 0 && i - y1 > 20)
                     {
                         y2 = i;
                         if (ImageRecognition.IsDebug || OutputImageWhenError)
@@ -1080,39 +1081,132 @@ namespace GeniusInvokationAutoToy.Strategy
                 throw new RetryException($"识别到{cnt}个出战角色");
             }
 
+            AppendCharacterStatus(duel.CurrentCharacter, srcMat);
+            return duel.CurrentCharacter;
+        }
+
+        public void AppendCharacterStatus(Character character, Mat srcMat)
+        {
+            Mat resMat;
             // 截取出战角色区域扩展
-            Mat characterMat = new Mat(srcMat, new Rect(duel.CurrentCharacter.Area.X,
-                duel.CurrentCharacter.Area.Y,
-                duel.CurrentCharacter.Area.Width + 40,
-                duel.CurrentCharacter.Area.Height +
-                duel.CurrentCharacter.Area.Y - duel.CurrentCharacter.HpUpperArea.Y));
+            Mat characterMat = new Mat(srcMat, new Rect(character.Area.X,
+                character.Area.Y,
+                character.Area.Width + 40,
+                character.Area.Height + 10));
             // 识别角色异常状态
             Point pCharacterStatusFreeze = ImageRecognition.FindSingleTarget(characterMat.Clone(),
                 ImageResCollections.CharacterStatusFreezeBitmap.ToMat(), 0.7);
             if (!pCharacterStatusFreeze.IsEmpty)
             {
-                duel.CurrentCharacter.StatusList.Add(CharacterStatusEnum.Frozen);
+                character.StatusList.Add(CharacterStatusEnum.Frozen);
             }
 
             Point pCharacterStatusDizziness = ImageRecognition.FindSingleTarget(characterMat.Clone(),
                 ImageResCollections.CharacterStatusDizzinessBitmap.ToMat(), 0.7);
             if (!pCharacterStatusDizziness.IsEmpty)
             {
-                duel.CurrentCharacter.StatusList.Add(CharacterStatusEnum.Dizziness);
+                character.StatusList.Add(CharacterStatusEnum.Dizziness);
             }
 
             // 识别角色能量
             List<Point> energyPointList = ImageRecognition.FindMultiTarget(characterMat.Clone(),
                 ImageResCollections.CharacterEnergyOnBitmap.ToMat(), "e", out resMat);
-            duel.CurrentCharacter.EnergyByRecognition = energyPointList.Count;
+            character.EnergyByRecognition = energyPointList.Count;
 
-            MyLogger.Info("当前出战" + duel.CurrentCharacter.ToString());
-            return duel.CurrentCharacter;
+            MyLogger.Info("当前出战" + character);
         }
 
         public Character WhichCharacterActiveWithRetry(Duel duel)
         {
-            return Retry.Do(() => WhichCharacterActive(duel), TimeSpan.FromSeconds(0.3), 12);
+            return Retry.Do(() => WhichCharacterActiveByHpWord(duel), TimeSpan.FromSeconds(0.3), 2);
+        }
+
+        public Character WhichCharacterActiveByHpWord(Duel duel)
+        {
+            if (duel.CharacterCardRects == null || duel.CharacterCardRects.Count != 3)
+            {
+                throw new Exception("未能获取到我方角色卡位置");
+            }
+
+            Mat srcMat = Capture().ToMat();
+
+            int halfHeight = srcMat.Height / 2;
+            Mat bottomMat = new Mat(srcMat, new Rect(0, halfHeight, srcMat.Width, srcMat.Height - halfHeight));
+
+            var lowPurple = new Scalar(239, 239, 239);
+            var highPurple = new Scalar(242, 242, 250);
+            Mat gray = ImageRecognition.Threshold(bottomMat, lowPurple, highPurple);
+
+            //var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(15, 10), new OpenCvSharp.Point(-1, -1));
+            //Cv2.Dilate(gray, gray, kernel); //膨胀
+
+
+            OpenCvSharp.Point[][] contours;
+            HierarchyIndex[] hierarchy;
+            Cv2.FindContours(gray, out contours, out hierarchy, RetrievalModes.External,
+                ContourApproximationModes.ApproxSimple, null);
+
+            List<Rect> rects = null;
+            if (contours.Length > 0)
+            {
+                var boxes = contours.Select(Cv2.BoundingRect).Where(w => w.Width > 1 && w.Height >= 10);
+                rects = boxes.ToList();
+
+
+
+                // 按照Y轴高度排序
+                rects = rects.OrderByDescending(r => r.Y).ToList();
+
+                // 第一个和角色卡重叠的矩形
+                foreach (Rect rect in rects)
+                {
+                    for (var i = 0; i < duel.CharacterCardRects.Count; i++)
+                    {
+                        // 延长高度，确保能够相交
+                        var rect1 = new Rectangle(rect.X, halfHeight + rect.Y, rect.Width + 10,
+                            rect.Height + 30);
+                        if (isOverlap(rect1, duel.CharacterCardRects[i]) &&
+                            halfHeight + rect.Y < duel.CharacterCardRects[i].Y)
+                        {
+                            // 首个相交矩形就是出战角色
+                            duel.CurrentCharacter = duel.Characters[i + 1];
+                            AppendCharacterStatus(duel.CurrentCharacter, srcMat);
+
+                            Cv2.Rectangle(srcMat, rect1.ToCvRect(), Scalar.Red, 1);
+                            Cv2.Rectangle(srcMat, duel.CharacterCardRects[i].ToCvRect(), Scalar.Green, 1);
+                            Cv2.ImWrite("logs\\active_character2_success.jpg", srcMat);
+                            return duel.CurrentCharacter;
+                        }
+                    }
+                }
+
+                if (OutputImageWhenError)
+                {
+                    foreach (Rect rect2 in rects)
+                    {
+                        Cv2.Rectangle(bottomMat, new OpenCvSharp.Point(rect2.X, rect2.Y),
+                            new OpenCvSharp.Point(rect2.X + rect2.Width, rect2.Y + rect2.Height), Scalar.Red, 1);
+                    }
+
+                    foreach (var rc in duel.CharacterCardRects)
+                    {
+                        Cv2.Rectangle(bottomMat,
+                            new Rect(rc.X, rc.Y - halfHeight, rc.Width, rc.Height), Scalar.Green, 1);
+                    }
+
+
+                    Cv2.ImWrite("logs\\active_character2_no_overlap_error.jpg", bottomMat);
+                }
+            }
+            else
+            {
+                if (OutputImageWhenError)
+                {
+                    Cv2.ImWrite("logs\\active_character2_no_rects_error.jpg", gray);
+                }
+            }
+
+            throw new RetryException($"未识别到个出战角色");
         }
     }
 }

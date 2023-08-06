@@ -102,6 +102,7 @@ namespace GeniusInvokationAutoToy
             //target.TargetRichTextBox = rtbConsole;
             //target.UseDefaultRowColoringRules = true;
             //NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(target, NLog.LogLevel.Trace);
+
         }
 
         private bool YSStatus()

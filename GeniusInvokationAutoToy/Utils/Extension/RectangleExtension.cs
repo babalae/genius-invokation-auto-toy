@@ -14,6 +14,11 @@ namespace GeniusInvokationAutoToy.Utils.Extension
             return new OpenCvSharp.Rect(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
+        public static Rectangle ToRectangle(this OpenCvSharp.Rect rectangle)
+        {
+            return new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
         public static Point GetCenterPoint(this Rectangle rectangle)
         {
             if (rectangle.IsEmpty)
