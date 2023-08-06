@@ -17,6 +17,7 @@ using GeniusInvokationAutoToy.Strategy.Model;
 using Point = System.Drawing.Point;
 using GeniusInvokationAutoToy.Strategy.Model.Old;
 using static GeniusInvokationAutoToy.Utils.Native;
+using System.Diagnostics;
 
 namespace GeniusInvokationAutoToy.Strategy
 {
@@ -79,6 +80,22 @@ namespace GeniusInvokationAutoToy.Strategy
             window.Focus();
         }
 
+        public string GetActiveProcessName()
+        {
+            try
+            {
+                IntPtr hwnd = Native.GetForegroundWindow();
+                uint pid;
+                GetWindowThreadProcessId(hwnd, out pid);
+                Process p = Process.GetProcessById((int)pid);
+                return p.ProcessName;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public void IsGameFocus()
         {
             windowRect = GetWindowRealRect(window);
@@ -125,18 +142,29 @@ namespace GeniusInvokationAutoToy.Strategy
 
         public void Sleep(int millisecondsTimeout)
         {
-            CheckTaskCancel();
+            CheckTask();
             Thread.Sleep(millisecondsTimeout);
         }
 
         public Bitmap Capture()
         {
-            CheckTaskCancel();
+            CheckTask();
             return capture.Capture();
         }
 
-        public void CheckTaskCancel()
+        public void CheckTask()
         {
+            Retry.Do(() =>
+            {
+                string name = GetActiveProcessName();
+                if (!string.IsNullOrEmpty(name) && name != "YuanShen" && name != "GenshinImpact")
+                {
+                    MyLogger.Warn("当前获取焦点的窗口进程名:{},不是原神窗口，暂停", name);
+                    throw new RetryException("当前获取焦点的窗口不是原神窗口");
+                }
+            }, TimeSpan.FromSeconds(1), 100);
+
+
             if (cts != null && cts.IsCancellationRequested)
             {
                 throw new TaskCanceledException("任务取消");
@@ -1151,7 +1179,6 @@ namespace GeniusInvokationAutoToy.Strategy
             {
                 var boxes = contours.Select(Cv2.BoundingRect).Where(w => w.Width > 1 && w.Height >= 10);
                 rects = boxes.ToList();
-
 
 
                 // 按照Y轴高度排序
