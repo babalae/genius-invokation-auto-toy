@@ -1181,7 +1181,7 @@ namespace GeniusInvokationAutoToy.Strategy
             List<Rect> rects = null;
             if (contours.Length > 0)
             {
-                var boxes = contours.Select(Cv2.BoundingRect).Where(w => w.Width > 1 && w.Height >= 10);
+                var boxes = contours.Select(Cv2.BoundingRect).Where(w => w.Width > 1 && w.Height >= 5);
                 rects = boxes.ToList();
 
 
@@ -1194,8 +1194,8 @@ namespace GeniusInvokationAutoToy.Strategy
                     for (var i = 0; i < duel.CharacterCardRects.Count; i++)
                     {
                         // 延长高度，确保能够相交
-                        var rect1 = new Rectangle(rect.X, halfHeight + rect.Y, rect.Width + 10,
-                            rect.Height + 30);
+                        var rect1 = new Rectangle(rect.X, halfHeight + rect.Y, rect.Width + 20,
+                            rect.Height + 50);
                         if (isOverlap(rect1, duel.CharacterCardRects[i]) &&
                             halfHeight + rect.Y < duel.CharacterCardRects[i].Y)
                         {
