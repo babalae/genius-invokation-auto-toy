@@ -1169,8 +1169,8 @@ namespace GeniusInvokationAutoToy.Strategy
             var highPurple = new Scalar(242, 242, 250);
             Mat gray = ImageRecognition.Threshold(bottomMat, lowPurple, highPurple);
 
-            //var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(15, 10), new OpenCvSharp.Point(-1, -1));
-            //Cv2.Dilate(gray, gray, kernel); //膨胀
+            var kernel = Cv2.GetStructuringElement(MorphShapes.Rect, new OpenCvSharp.Size(15, 10), new OpenCvSharp.Point(-1, -1));
+            Cv2.Dilate(gray, gray, kernel); //膨胀
 
 
             OpenCvSharp.Point[][] contours;
@@ -1181,12 +1181,12 @@ namespace GeniusInvokationAutoToy.Strategy
             List<Rect> rects = null;
             if (contours.Length > 0)
             {
-                var boxes = contours.Select(Cv2.BoundingRect).Where(w => w.Width > 1 && w.Height >= 5);
-                rects = boxes.ToList();
+                // .Where(w => w.Width > 1 && w.Height >= 5)
+                rects = contours.Select(Cv2.BoundingRect).ToList();
 
 
                 // 按照Y轴高度排序
-                rects = rects.OrderByDescending(r => r.Y).ToList();
+                rects = rects.OrderBy(r => r.Y).ToList();
 
                 // 第一个和角色卡重叠的矩形
                 foreach (Rect rect in rects)
@@ -1195,7 +1195,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     {
                         // 延长高度，确保能够相交
                         var rect1 = new Rectangle(rect.X, halfHeight + rect.Y, rect.Width + 20,
-                            rect.Height + 50);
+                            rect.Height + 20);
                         if (isOverlap(rect1, duel.CharacterCardRects[i]) &&
                             halfHeight + rect.Y < duel.CharacterCardRects[i].Y)
                         {
@@ -1203,31 +1203,15 @@ namespace GeniusInvokationAutoToy.Strategy
                             duel.CurrentCharacter = duel.Characters[i + 1];
                             AppendCharacterStatus(duel.CurrentCharacter, srcMat);
 
-                            Cv2.Rectangle(srcMat, rect1.ToCvRect(), Scalar.Red, 1);
-                            Cv2.Rectangle(srcMat, duel.CharacterCardRects[i].ToCvRect(), Scalar.Green, 1);
-                            Cv2.ImWrite("logs\\active_character2_success.jpg", srcMat);
+                            Cv2.Rectangle(srcMat, rect1.ToCvRect(), Scalar.Yellow);
+                            Cv2.Rectangle(srcMat, duel.CharacterCardRects[i].ToCvRect(), Scalar.Blue, 2);
+                            OutputImage(duel, rects, bottomMat, halfHeight, "logs\\active_character2_success.jpg");
                             return duel.CurrentCharacter;
                         }
                     }
                 }
 
-                if (OutputImageWhenError)
-                {
-                    foreach (Rect rect2 in rects)
-                    {
-                        Cv2.Rectangle(bottomMat, new OpenCvSharp.Point(rect2.X, rect2.Y),
-                            new OpenCvSharp.Point(rect2.X + rect2.Width, rect2.Y + rect2.Height), Scalar.Red, 1);
-                    }
-
-                    foreach (var rc in duel.CharacterCardRects)
-                    {
-                        Cv2.Rectangle(bottomMat,
-                            new Rect(rc.X, rc.Y - halfHeight, rc.Width, rc.Height), Scalar.Green, 1);
-                    }
-
-
-                    Cv2.ImWrite("logs\\active_character2_no_overlap_error.jpg", bottomMat);
-                }
+                OutputImage(duel, rects, bottomMat, halfHeight, "logs\\active_character2_no_overlap_error.jpg");
             }
             else
             {
@@ -1238,6 +1222,27 @@ namespace GeniusInvokationAutoToy.Strategy
             }
 
             throw new RetryException($"未识别到个出战角色");
+        }
+
+        private static void OutputImage(Duel duel, List<Rect> rects, Mat bottomMat, int halfHeight, string fileName)
+        {
+            if (OutputImageWhenError)
+            {
+                foreach (Rect rect2 in rects)
+                {
+                    Cv2.Rectangle(bottomMat, new OpenCvSharp.Point(rect2.X, rect2.Y),
+                        new OpenCvSharp.Point(rect2.X + rect2.Width, rect2.Y + rect2.Height), Scalar.Red, 1);
+                }
+
+                foreach (var rc in duel.CharacterCardRects)
+                {
+                    Cv2.Rectangle(bottomMat,
+                        new Rect(rc.X, rc.Y - halfHeight, rc.Width, rc.Height), Scalar.Green, 1);
+                }
+
+
+                Cv2.ImWrite(fileName, bottomMat);
+            }
         }
     }
 }
