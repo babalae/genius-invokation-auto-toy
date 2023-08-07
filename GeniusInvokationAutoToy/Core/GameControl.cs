@@ -921,7 +921,7 @@ namespace GeniusInvokationAutoToy.Strategy
                     }
                     else
                     {
-                        // 多延迟2s // 保证阵亡提示已经完成显示
+                        // 多延迟2s // 保证被击败提示已经完成显示
                         inMyActionCount++;
                         if (inMyActionCount == 3)
                         {
@@ -1162,6 +1162,12 @@ namespace GeniusInvokationAutoToy.Strategy
 
         public Character WhichCharacterActiveWithRetry(Duel duel)
         {
+            // 检查角色是否被击败 // 这里又检查一次是因为最后一个角色存活的情况下，会自动出战
+            bool[] defeatedArray = WhatCharacterDefeated(duel.CharacterCardRects);
+            for (int i = defeatedArray.Length - 1; i >= 0; i--)
+            {
+                duel.Characters[i + 1].IsDefeated = defeatedArray[i];
+            }
             return Retry.Do(() => WhichCharacterActiveByHpWord(duel), TimeSpan.FromSeconds(0.3), 2);
         }
 
