@@ -4,7 +4,7 @@
 
 PC原神七圣召唤PVE全自动打牌。
 
-<del>[📺视频演示](https://www.bilibili.com/video/BV13h4y1L7PH)</del>
+[📺视频演示2](https://www.bilibili.com/video/BV1Lu4y1R7kM/) <del>（视频演示1被审核锁定了，重新做了一个）</del>
 
 当前只完整支持无缩放 1920x1080 的窗口化游戏，其它分辨率很有可能会没法正常识别
 
