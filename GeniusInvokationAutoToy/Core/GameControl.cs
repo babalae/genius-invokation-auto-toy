@@ -706,6 +706,12 @@ namespace GeniusInvokationAutoToy.Strategy
                     Sleep(1000); // 烧牌动画
                     ClickGameWindowCenter(); // 复位
                     Sleep(500);
+                    // 最后一张牌的回正速度较慢，多等一会
+                    if (duel.CurrentCardCount <= 1)
+                    {
+                        ClickGameWindowCenter(); // 复位
+                        Sleep(1000);
+                    }
                 }
             }
 
