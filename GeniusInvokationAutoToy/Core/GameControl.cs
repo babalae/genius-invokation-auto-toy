@@ -910,6 +910,7 @@ namespace GeniusInvokationAutoToy.Strategy
 
             // 判断对方行动是否已经结束
             int retryCount = 0;
+            int inMyActionCount = 0;
             while (true)
             {
                 if (IsInMyAction())
@@ -920,7 +921,12 @@ namespace GeniusInvokationAutoToy.Strategy
                     }
                     else
                     {
-                        break;
+                        // 多延迟2s // 保证阵亡提示已经完成显示
+                        inMyActionCount++;
+                        if (inMyActionCount == 3)
+                        {
+                            break;
+                        }
                     }
                 }
                 else if (IsDuelEnd())
