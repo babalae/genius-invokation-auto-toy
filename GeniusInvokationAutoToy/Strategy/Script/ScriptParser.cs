@@ -8,6 +8,7 @@ using GeniusInvokationAutoToy.Core.Model;
 using OpenCvSharp;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Windows.Forms;
 using GeniusInvokationAutoToy.Utils;
 
 namespace GeniusInvokationAutoToy.Strategy.Script
@@ -21,11 +22,10 @@ namespace GeniusInvokationAutoToy.Strategy.Script
             foreach (var line in lines)
             {
                 string l = line.Trim();
-                if (l.StartsWith("//"))
-                {
-                    continue;
-                }
-
+                //if (l.StartsWith("//"))
+                //{
+                //    continue;
+                //}
                 result.Add(l);
             }
 
@@ -49,7 +49,7 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                         continue;
                     }
 
-                    if (line == "---")
+                    if (line == "---" || line.StartsWith("//") || string.IsNullOrEmpty(line))
                     {
                         continue;
                     }
@@ -61,18 +61,18 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                     }
                     else if (stage == "策略定义:")
                     {
-                        Trace.Assert(duel.Characters[3] != null, "角色未定义");
+                        MyAssert(duel.Characters[3] != null, "角色未定义");
 
                         string[] actionParts = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                        Trace.Assert(actionParts.Length == 3, "策略中的行动命令解析错误");
-                        Trace.Assert(actionParts[1] == "使用", "策略中的行动命令解析错误");
+                        MyAssert(actionParts.Length == 3, "策略中的行动命令解析错误");
+                        MyAssert(actionParts[1] == "使用", "策略中的行动命令解析错误");
 
                         var actionCommand = new ActionCommand();
                         var action = actionParts[1].ChineseToActionEnum();
                         actionCommand.Action = action;
 
                         int j = 1;
-                        for ( j = 1; j <= 3; j++)
+                        for (j = 1; j <= 3; j++)
                         {
                             var character = duel.Characters[j];
                             if (character != null && character.Name == actionParts[0])
@@ -81,10 +81,11 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                                 break;
                             }
                         }
-                        Trace.Assert(j <= 3, "策略中的行动命令解析错误：角色名称无法从角色定义中匹配到");
+
+                        MyAssert(j <= 3, "策略中的行动命令解析错误：角色名称无法从角色定义中匹配到");
 
                         int skillNum = int.Parse(Regex.Replace(actionParts[2], @"[^0-9]+", ""));
-                        Trace.Assert(skillNum < 5, "策略中的行动命令解析错误：技能编号错误");
+                        MyAssert(skillNum < 5, "策略中的行动命令解析错误：技能编号错误");
                         actionCommand.TargetIndex = skillNum;
                         duel.ActionCommandQueue.Add(actionCommand);
                     }
@@ -94,11 +95,12 @@ namespace GeniusInvokationAutoToy.Strategy.Script
                     }
                 }
 
-                Trace.Assert(duel.Characters[3] != null, "角色未定义，请确认策略文本格式是否为UTF-8");
+                MyAssert(duel.Characters[3] != null, "角色未定义，请确认策略文本格式是否为UTF-8");
             }
             catch (Exception ex)
             {
                 MyLogger.Error($"解析脚本错误，行号：{i + 1}，错误信息：{ex}");
+                MessageBox.Show($"解析脚本错误，行号：{i + 1}，错误信息：{ex}", "策略解析失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 
@@ -121,7 +123,7 @@ namespace GeniusInvokationAutoToy.Strategy.Script
 
             var parts = characterAndSkill[0].Split('=');
             character.Index = int.Parse(Regex.Replace(parts[0], @"[^0-9]+", ""));
-            Trace.Assert(character.Index >= 1 && character.Index <= 3, "角色序号必须在1-3之间");
+            MyAssert(character.Index >= 1 && character.Index <= 3, "角色序号必须在1-3之间");
             var nameAndElement = parts[1].Split('|');
             character.Name = nameAndElement[0];
             character.Element = nameAndElement[1].Substring(0, 1).ChineseToElementalType();
@@ -152,7 +154,7 @@ namespace GeniusInvokationAutoToy.Strategy.Script
             var skill = new Skill();
             var parts = oneSkillStr.Split('=');
             skill.Index = short.Parse(Regex.Replace(parts[0], @"[^0-9]+", ""));
-            Trace.Assert(skill.Index >= 1 && skill.Index <= 5, "技能序号必须在1-5之间");
+            MyAssert(skill.Index >= 1 && skill.Index <= 5, "技能序号必须在1-5之间");
             var costStr = parts[1];
             var costParts = costStr.Split('+');
             skill.SpecificElementCost = int.Parse(costParts[0].Substring(0, 1));
@@ -162,8 +164,17 @@ namespace GeniusInvokationAutoToy.Strategy.Script
             {
                 skill.AnyElementCost = int.Parse(costParts[1].Substring(0, 1));
             }
+
             skill.AllCost = skill.SpecificElementCost + skill.AnyElementCost;
             return skill;
+        }
+
+        private static void MyAssert(bool b, string msg)
+        {
+            if (!b)
+            {
+                throw new Exception(msg);
+            }
         }
     }
 }

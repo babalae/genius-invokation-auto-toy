@@ -75,7 +75,7 @@ namespace GeniusInvokationAutoToy
             LoadCustomScript();
             YSStatus();
 
-            cboGameResolution.SelectedIndex = Properties.Settings.Default.CboGameResolutionSelectIndex;
+            cboGameResolution.SelectedIndex = 0;
             if (cboStrategy.Items.Count - 1 >= Properties.Settings.Default.CboStrategySelectIndex)
             {
                 cboStrategy.SelectedIndex = Properties.Settings.Default.CboStrategySelectIndex;
@@ -144,25 +144,26 @@ namespace GeniusInvokationAutoToy
                 return;
             }
 
-            window.Focus();
-
-            rtbConsole.Text = ""; // 清空日志
-
-            cts = new CancellationTokenSource();
-
-
             Duel duel = ScriptParser.Parse(File.ReadAllText(Path.Combine(Application.StartupPath, "strategy",
                 cboStrategy.Text + ".txt"), Encoding.UTF8));
-            if (duel == null)
+            if (duel != null)
             {
-                throw new Exception("策略解析失败");
+                window.Focus();
+
+                rtbConsole.Text = ""; // 清空日志
+
+                cts = new CancellationTokenSource();
+
+                await duel.CustomStrategyRunAsync(cts);
+
+                // 打完了切回来
+                isAutoPlaying = false;
+                btnSwitch.Text = "开始自动打牌(F11)";
             }
-
-            await duel.CustomStrategyRunAsync(cts);
-
-            // 打完了切回来
-            isAutoPlaying = false;
-            btnSwitch.Text = "开始自动打牌(F11)";
+            else
+            {
+                throw new Exception("加载打牌策略失败");
+            }
         }
 
         private void StopGame()
