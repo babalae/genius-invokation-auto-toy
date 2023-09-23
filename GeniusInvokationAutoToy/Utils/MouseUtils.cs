@@ -13,7 +13,7 @@ namespace GeniusInvokationAutoToy.Utils
         public static void Move(int x, int y)
         {
             Native.mouse_event(Native.MouseEventFlag.Absolute | Native.MouseEventFlag.Move,
-                x * 65536 / PrimaryScreen.DESKTOP.Width, y * 65536 / PrimaryScreen.DESKTOP.Height,
+                x * 65535 / PrimaryScreen.DESKTOP.Width, y * 65535 / PrimaryScreen.DESKTOP.Height,
                 0, 0);
         }
 
