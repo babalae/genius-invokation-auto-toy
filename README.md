@@ -1,4 +1,8 @@
-更多： [🐟 自动钓鱼机](https://github.com/babalae/genshin-fishing-toy) | [🛠️账号切换](https://github.com/babalae/mihoyo-starter)
+更多： **[🍨BetterGI · 更好的原神](https://github.com/babalae/better-genshin-impact)** | [🐟 自动钓鱼机](https://github.com/babalae/genshin-fishing-toy) | [🛠️账号切换](https://github.com/babalae/mihoyo-starter)
+
+# !!! 💡 迁移 💡 !!!
+
+**当前自动打牌功能已经迁移至 [🍨BetterGI · 更好的原神](https://github.com/babalae/better-genshin-impact)，并进行了大幅优化！**
 
 # 🎲 七圣召唤PVE全自动打牌
 
@@ -12,9 +16,15 @@ PC原神七圣召唤PVE全自动打牌。
 
 部分场景不支持、或者打不过、拿不满奖励。
 
-1.3版本开始完全支持角色被超载、冻结等异常情况（雷电将军相关卡组由于无充能判断，可能在被冻结的情况下无法进行后续步骤）。
+1.3版本开始完全支持角色被超载、冻结等异常情况。
 
 其他分辨率、语言想要支持也简单的，只要在对应分辨率下截取一些图片替换软件目录下的文件即可。
+
+**不支持或胜率低的场景：**
+* 雷电将军相关卡组由于无充能判断，可能在被冻结的情况下无法进行后续步骤
+* 角色被击败时被超载，会无法判断角色是否被击败
+* 因为场地牌，挂不上元素的情况，大概率打不过
+* 因为场地牌，元素骰子增减的情况，暂不支持（后续会支持...）
 
 ## 截图
 
